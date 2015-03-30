@@ -1,0 +1,2 @@
+serviceClass: co.edu.uniandes.hrs.client.HRSService
+path: 0A60B85B9A6743306D9AC243C34AB70A.gwt.rpc
