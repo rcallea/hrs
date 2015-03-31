@@ -3,6 +3,8 @@ package co.edu.uniandes.hrs.client;
 
 import java.util.List;
 
+import co.edu.uniandes.hrs.shared.CFParameters;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -18,7 +20,6 @@ import com.google.gwt.user.client.ui.Button;
 public class Controller implements ClickHandler, EntryPoint {
 	
 	private CFView CFView;
-	private UserView userView;
 	private RSConstants constants = GWT.create(RSConstants.class);
 
 	//private ArrayList<String> stocks = new ArrayList<String>();
@@ -26,9 +27,6 @@ public class Controller implements ClickHandler, EntryPoint {
 
 	@Override
 	public void onModuleLoad() {
-		this.userView=new UserView();
-		this.userView.setController(this);
-		this.userView.generateUI();
 		this.CFView=new CFView();
 		this.CFView.setController(this);
 		this.CFView.generateUI();
@@ -40,8 +38,8 @@ public class Controller implements ClickHandler, EntryPoint {
 		if(event.getSource() instanceof Button) {
 			sender = ((Button) event.getSource()).getText();
 			
-			if(sender.equals(this.constants.uiSend())) {
-				if(this.userView.validate()) {
+			if(sender.equals(this.constants.cfSend())) {
+				if(this.CFView.validate()) {
 					this.sendUser();
 				}
 			}
@@ -50,10 +48,15 @@ public class Controller implements ClickHandler, EntryPoint {
 	
 	private void sendUser() {
 		if(hrsSvc==null) hrsSvc = GWT.create(HRSService.class);
-		String user=this.userView.getTextBoxUsername().getText() + "|"
-				+ this.userView.getTextBoxName().getText() + "|"
-				+ this.userView.getTextBoxTwitter().getText() + "|" 
-				+ this.userView.getTextBoxEmail().getText();
+		CFParameters data=new CFParameters();
+		
+		try {
+			data=new CFParameters(this.CFView.getListboxDatasetSize(),
+					this.CFView.getTextboxNeighbors().getText(),
+					this.CFView.getListBoxMeasureType(),
+					this.CFView.getListBoxRecommenderType(),
+					Integer.parseInt(this.CFView.getTextboxUser().getText()));
+		} catch (NumberFormatException nfe) {}
 		
 		AsyncCallback<String[]> callback = new AsyncCallback<String[]>() {
 			public void onFailure(Throwable caught) {
@@ -67,10 +70,17 @@ public class Controller implements ClickHandler, EntryPoint {
 		};
 
 		// Make the call to the stock price service.
-		hrsSvc.sendUser(user, callback);
+		hrsSvc.sendUser(data, callback);
 	}
 
 	private void updateUsers(String[] result) {
-		this.userView.getTextBoxEmail().setText(result[0]);
+		this.CFView.getHtmlPrecisionResult().setText(result[0]);
+		this.CFView.getHtmlRecallResult().setText(result[1]);
+		String text="";
+		for(int i=2;i<result.length;i++) {
+			text+=result[i] + " ";
+		}
+		this.CFView.getHtmlResultListResult().setText(text);
+		
 	}
 }

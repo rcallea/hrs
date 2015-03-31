@@ -31,12 +31,20 @@ public class CFView {
 	private HTML htmlNeighbors=new HTML(constants.cfNeighbors());
 	private HTML htmlMeasureType=new HTML(constants.cfMeasureType());
 	private HTML htmlRecommenderType=new HTML(constants.cfRecommenderType());
+	private HTML htmlUser=new HTML(constants.cfUser());
+	private HTML htmlPrecision=new HTML(constants.cfPrecision());
+	private HTML htmlRecall=new HTML(constants.cfRecall());
+	private HTML htmlResultList=new HTML(constants.cfResultList());
 	private HTML htmlError=new HTML();
-	private TextBox textBoxUsername=new TextBox();
-	private TextBox textBoxName=new TextBox();
-	private TextBox textBoxTwitter=new TextBox();
-	private TextBox textBoxEmail=new TextBox();
-	private Button buttonSend = new Button(constants.uiSend());
+	private ListBox listboxDatasetSize=new ListBox();
+	private TextBox textboxNeighbors=new TextBox();
+	private ListBox listBoxMeasureType=new ListBox();
+	private ListBox listBoxRecommenderType=new ListBox();
+	private TextBox textboxUser=new TextBox();
+	private HTML htmlPrecisionResult=new HTML("");
+	private HTML htmlRecallResult=new HTML("");
+	private HTML htmlResultListResult=new HTML("");
+	private Button buttonSend = new Button(constants.cfSend());
 	private Controller controller;
 	
 	/**
@@ -50,24 +58,41 @@ public class CFView {
 	 * Adds the elements to the root page
 	 */
 	public void generateUI() {
-		this.textBoxUsername.setText("3500");
-		this.textBoxName.setText("Nombre");
-		this.textBoxTwitter.setText("@twitter");
-		this.textBoxEmail.setText("example@example.com");
+		int row=0;
+		int column=0;
+		FlexTable ft=new FlexTable();
+		
+		this.setListboxDatasetSize(constants.cfDatasetSizeValues());
+		this.textboxNeighbors.setText("10");;
+		this.setListBoxMeasureType(constants.cfMeasureTypeValues());
+		this.setListBoxRecommenderType(constants.cfRecommenderTypeValues());
+		this.textboxUser.setText("2");;
 		
 		this.vp.add(this.htmlUiTitle);
-		this.vp.add(this.htmlDatasetSize);
-		this.vp.add(this.textBoxUsername);
-		this.vp.add(this.htmlNeighbors);
-		this.vp.add(this.textBoxName);
-		this.vp.add(this.htmlMeasureType);
-		this.vp.add(this.textBoxTwitter);
-		this.vp.add(this.htmlRecommenderType);
-		this.vp.add(this.textBoxEmail);
-		this.vp.add(new HTML("<hr/>"));
-		this.vp.add(this.buttonSend);
-		this.vp.add(new HTML("<hr/>"));
+		ft.setWidget(row++,column, this.htmlDatasetSize);
+		ft.setWidget(row++,column, this.htmlNeighbors);
+		ft.setWidget(row++,column, this.htmlMeasureType);
+		ft.setWidget(row++,column, this.htmlRecommenderType);
+		ft.setWidget(row++,column, this.htmlUser);
+		ft.setWidget(row++,column, this.htmlPrecision);
+		ft.setWidget(row++,column, this.htmlRecall);
+		ft.setWidget(row++,column, this.htmlResultList);
+		
+		column++;
+		row=0;
+		ft.setWidget(row++, column, this.listboxDatasetSize);
+		ft.setWidget(row++, column, this.textboxNeighbors);
+		ft.setWidget(row++, column, this.listBoxMeasureType);
+		ft.setWidget(row++, column, this.listBoxRecommenderType);
+		ft.setWidget(row++, column, this.textboxUser);
+		ft.setWidget(row++, column, this.htmlPrecisionResult);
+		ft.setWidget(row++, column, this.htmlRecallResult);
+		ft.setWidget(row++, column, this.htmlResultListResult);
+		ft.setStyleName("table table-striped");
+		this.vp.add(ft);
+
 		this.vp.add(this.htmlError);
+		this.vp.add(this.buttonSend);
 		this.buttonSend.addClickHandler(this.controller);
 		RootPanel.get("cf").add(this.vp);
 		
@@ -90,33 +115,306 @@ public class CFView {
 
 	public boolean validate() {
 		boolean retorno=true;
-//		String message="<ul>";
-//		if(!this.getTextBoxUsername().getText().matches("[0-9]+")) {
-//			retorno=false;
-//			message += "<li>" + this.constants.uiFieldError() + "\"" + this.constants.uiUserName() + "\": " + this.constants.uiFieldErrorMessage() + "</li>";
-//		}
-//
-//		if(this.getTextBoxName().getText().trim().equals("")) {
-//			retorno=false;
-//			message += "<li>" + this.constants.uiFieldError() + "\"" + this.constants.uiName() + "\": " + this.constants.uiFieldErrorMessage() + "</li>";
-//		}
-//		
-//		if(this.getTextBoxEmail().getText().trim().equals("")) {
-//			retorno=false;
-//			message += "<li>" + this.constants.uiFieldError() + "\"" + this.constants.uiEmail() + "\": " + this.constants.uiFieldErrorMessage() + "</li>";
-//		}
-//		
-//		if(this.getTextBoxTwitter().getText().trim().equals("")) {
-//			retorno=false;
-//			message += "<li>" + this.constants.uiFieldError() + "\"" + this.constants.uiTwitter() + "\": " + this.constants.uiFieldErrorMessage() + "</li>";
-//		}
-//		
-//		if(retorno==false) {
-//			this.showErrorMessage(message + "</ul>");
-//		}
-//		else {
-//			this.hidErrorMessage();
-//		}
+		String message="<ul>";
+		if(!this.getTextboxNeighbors().getText().matches("[0-9]+")) {
+			retorno=false;
+			message += "<li>" + this.constants.uiFieldError() + "\" " + this.constants.cfNeighbors() + "\": " + this.constants.uiFieldErrorMessage() + "</li>";
+		} else {
+			try {
+				int value=Integer.parseInt(this.getTextboxNeighbors().getText());
+				if(value<constants.cfNeighborsMinValue() || value>constants.cfNeighborsMaxValue()) {
+					retorno=false;
+					message += "<li>" + this.constants.uiFieldError() + "\" " + this.constants.cfNeighbors() + "\". " + this.constants.uiFieldOutOfBoundsMessage(); 
+				}
+			} catch (NumberFormatException nfe) {}
+		}
+
+		if(!this.getTextboxUser().getText().matches("[0-9]+")) {
+			retorno=false;
+			message += "<li>" + this.constants.uiFieldError() + "\" " + this.constants.cfUser() + "\": " + this.constants.uiFieldErrorMessage() + " [" + constants.cfNeighborsMinValue() + "," + constants.cfNeighborsMaxValue() + "]" + "</li>";
+		}
+		
+		
+		if(retorno==false) {
+			this.showErrorMessage(message + "</ul>");
+		}
+		else {
+			this.hidErrorMessage();
+		}
 		return retorno;
+	}
+
+	/**
+	 * @return the htmlUiTitle
+	 */
+	public HTML getHtmlUiTitle() {
+		return htmlUiTitle;
+	}
+
+	/**
+	 * @param htmlUiTitle the htmlUiTitle to set
+	 */
+	public void setHtmlUiTitle(HTML htmlUiTitle) {
+		this.htmlUiTitle = htmlUiTitle;
+	}
+
+	/**
+	 * @return the htmlDatasetSize
+	 */
+	public HTML getHtmlDatasetSize() {
+		return htmlDatasetSize;
+	}
+
+	/**
+	 * @param htmlDatasetSize the htmlDatasetSize to set
+	 */
+	public void setHtmlDatasetSize(HTML htmlDatasetSize) {
+		this.htmlDatasetSize = htmlDatasetSize;
+	}
+
+	/**
+	 * @return the htmlNeighbors
+	 */
+	public HTML getHtmlNeighbors() {
+		return htmlNeighbors;
+	}
+
+	/**
+	 * @param htmlNeighbors the htmlNeighbors to set
+	 */
+	public void setHtmlNeighbors(HTML htmlNeighbors) {
+		this.htmlNeighbors = htmlNeighbors;
+	}
+
+	/**
+	 * @return the htmlMeasureType
+	 */
+	public HTML getHtmlMeasureType() {
+		return htmlMeasureType;
+	}
+
+	/**
+	 * @param htmlMeasureType the htmlMeasureType to set
+	 */
+	public void setHtmlMeasureType(HTML htmlMeasureType) {
+		this.htmlMeasureType = htmlMeasureType;
+	}
+
+	/**
+	 * @return the htmlRecommenderType
+	 */
+	public HTML getHtmlRecommenderType() {
+		return htmlRecommenderType;
+	}
+
+	/**
+	 * @param htmlRecommenderType the htmlRecommenderType to set
+	 */
+	public void setHtmlRecommenderType(HTML htmlRecommenderType) {
+		this.htmlRecommenderType = htmlRecommenderType;
+	}
+
+	/**
+	 * @return the htmlUser
+	 */
+	public HTML getHtmlUser() {
+		return htmlUser;
+	}
+
+	/**
+	 * @param htmlUser the htmlUser to set
+	 */
+	public void setHtmlUser(HTML htmlUser) {
+		this.htmlUser = htmlUser;
+	}
+
+	/**
+	 * @return the htmlPrecision
+	 */
+	public HTML getHtmlPrecision() {
+		return htmlPrecision;
+	}
+
+	/**
+	 * @param htmlPrecision the htmlPrecision to set
+	 */
+	public void setHtmlPrecision(HTML htmlPrecision) {
+		this.htmlPrecision = htmlPrecision;
+	}
+
+	/**
+	 * @return the htmlRecall
+	 */
+	public HTML getHtmlRecall() {
+		return htmlRecall;
+	}
+
+	/**
+	 * @param htmlRecall the htmlRecall to set
+	 */
+	public void setHtmlRecall(HTML htmlRecall) {
+		this.htmlRecall = htmlRecall;
+	}
+
+	/**
+	 * @return the htmlResultList
+	 */
+	public HTML getHtmlResultList() {
+		return htmlResultList;
+	}
+
+	/**
+	 * @param htmlResultList the htmlResultList to set
+	 */
+	public void setHtmlResultList(HTML htmlResultList) {
+		this.htmlResultList = htmlResultList;
+	}
+
+	/**
+	 * @return the htmlError
+	 */
+	public HTML getHtmlError() {
+		return htmlError;
+	}
+
+	/**
+	 * @param htmlError the htmlError to set
+	 */
+	public void setHtmlError(HTML htmlError) {
+		this.htmlError = htmlError;
+	}
+
+	/**
+	 * @return the listboxDatasetSize
+	 */
+	public String getListboxDatasetSize() {
+		return this.listboxDatasetSize.getValue(this.listboxDatasetSize.getSelectedIndex());
+	}
+
+	/**
+	 * @param listboxDatasetSize the listboxDatasetSize to set
+	 */
+	public void setListboxDatasetSize(String[] datasetSizeValues) {
+		for(int i=0;i<datasetSizeValues.length;i++) {
+			this.listboxDatasetSize.addItem(datasetSizeValues[i],datasetSizeValues[i]);
+		}
+	}
+
+	/**
+	 * @return the textboxNeighbors
+	 */
+	public TextBox getTextboxNeighbors() {
+		return textboxNeighbors;
+	}
+
+	/**
+	 * @param textboxNeighbors the textboxNeighbors to set
+	 */
+	public void setTextboxNeighbors(TextBox textboxNeighbors) {
+		this.textboxNeighbors = textboxNeighbors;
+	}
+
+	/**
+	 * @return the listBoxMeasureType
+	 */
+	public String getListBoxMeasureType() {
+		return this.listBoxMeasureType.getValue(this.listBoxMeasureType.getSelectedIndex());
+	}
+
+	/**
+	 * @param listBoxMeasureType the listBoxMeasureType to set
+	 */
+	public void setListBoxMeasureType(String[] measureTypeValues) {
+		for(int i=0;i<measureTypeValues.length;i++) {
+			String[] cols=measureTypeValues[i].split(";");
+			this.listBoxMeasureType.addItem(cols[1], cols[0]);
+		}
+	}
+
+	/**
+	 * @return the listBoxRecommenderType
+	 */
+	public String getListBoxRecommenderType() {
+		return this.listBoxRecommenderType.getValue(this.listBoxRecommenderType.getSelectedIndex());
+	}
+
+	/**
+	 * @param listBoxRecommenderType the listBoxRecommenderType to set
+	 */
+	public void setListBoxRecommenderType(String[] recommenderTypeValues) {
+		for(int i=0;i<recommenderTypeValues.length;i++) {
+			String[] cols=recommenderTypeValues[i].split(";");
+			this.listBoxRecommenderType.addItem(cols[1], cols[0]);
+		}
+	}
+
+	/**
+	 * @return the textboxUser
+	 */
+	public TextBox getTextboxUser() {
+		return textboxUser;
+	}
+
+	/**
+	 * @param textboxUser the textboxUser to set
+	 */
+	public void setTextboxUser(TextBox textboxUser) {
+		this.textboxUser = textboxUser;
+	}
+
+	/**
+	 * @return the buttonSend
+	 */
+	public Button getButtonSend() {
+		return buttonSend;
+	}
+
+	/**
+	 * @param buttonSend the buttonSend to set
+	 */
+	public void setButtonSend(Button buttonSend) {
+		this.buttonSend = buttonSend;
+	}
+
+	/**
+	 * @return the htmlPrecisionResult
+	 */
+	public HTML getHtmlPrecisionResult() {
+		return htmlPrecisionResult;
+	}
+
+	/**
+	 * @param htmlPrecisionResult the htmlPrecisionResult to set
+	 */
+	public void setHtmlPrecisionResult(HTML htmlPrecisionResult) {
+		this.htmlPrecisionResult = htmlPrecisionResult;
+	}
+
+	/**
+	 * @return the htmlRecallResult
+	 */
+	public HTML getHtmlRecallResult() {
+		return htmlRecallResult;
+	}
+
+	/**
+	 * @param htmlRecallResult the htmlRecallResult to set
+	 */
+	public void setHtmlRecallResult(HTML htmlRecallResult) {
+		this.htmlRecallResult = htmlRecallResult;
+	}
+
+	/**
+	 * @return the htmlResultListResult
+	 */
+	public HTML getHtmlResultListResult() {
+		return htmlResultListResult;
+	}
+
+	/**
+	 * @param htmlResultListResult the htmlResultListResult to set
+	 */
+	public void setHtmlResultListResult(HTML htmlResultListResult) {
+		this.htmlResultListResult = htmlResultListResult;
 	}
 }
