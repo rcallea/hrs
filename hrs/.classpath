@@ -8,8 +8,8 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/recommender101.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Downloads/snowball-20051019.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Downloads/weka-3.7.0.jar"/>
-	<classpathentry kind="lib" path="D:/Instaladores/mongo-java-driver-3.0.0-rc1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/mongo-java-driver-3.0.0-rc1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/snowball-20051019.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/weka-3.7.0.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
