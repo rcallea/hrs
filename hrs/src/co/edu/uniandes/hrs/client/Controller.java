@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.Button;
 public class Controller implements ClickHandler, EntryPoint {
 	
 	private CFView CFView;
+	private ContentView ContentView;
 	private RSConstants constants = GWT.create(RSConstants.class);
 
 	//private ArrayList<String> stocks = new ArrayList<String>();
@@ -30,6 +31,10 @@ public class Controller implements ClickHandler, EntryPoint {
 		this.CFView=new CFView();
 		this.CFView.setController(this);
 		this.CFView.generateUI();
+		
+		this.ContentView=new ContentView();
+		this.ContentView.setController(this);
+		this.ContentView.generateUI();
 	}
 	
 	@Override
@@ -42,8 +47,14 @@ public class Controller implements ClickHandler, EntryPoint {
 				if(this.CFView.validate()) {
 					this.sendUser();
 				}
+			}else if(sender.equals(this.constants.cfSend())) {
+				if(this.ContentView.validate()) {
+					this.LoadRecommendationContent();
+				}
 			}
 		}
+		
+		
 	}
 	
 	private void sendUser() {
@@ -83,4 +94,28 @@ public class Controller implements ClickHandler, EntryPoint {
 		this.CFView.getHtmlResultListResult().setText(text);
 		
 	}
+
+	private void LoadRecommendationContent() {
+		String nameCity = this.ContentView.getTextboxCity().getText(); 
+		String category = this.ContentView.getTextboxCategory().getText();  
+		String description = this.ContentView.getTextboxDescription().getText();
+		
+		/*AsyncCallback<List<String>> callbackJaccard = new AsyncCallback<List<String>>() {
+			public void onFailure(Throwable caught) {
+		        // TODO: Do something with errors.
+			}
+
+			public void onSuccess(List<String> result) {
+				int i = 0;
+				for (String stringsRecommender : result) {
+					//userUserView.getJaccard().setText(i, 0, stringsRecommender);
+					
+					i++;
+				}
+			}
+		};
+		userUserSvc.getUserUserRecommended(userId, Integer.parseInt(numVecinos), Double.parseDouble(similarity), IndexType.JACCARD, callbackJaccard);*/
+
+	}
+
 }

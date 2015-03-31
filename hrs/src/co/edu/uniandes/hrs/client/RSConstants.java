@@ -9,6 +9,15 @@ public interface RSConstants extends Constants{
 	 * @return
 	 */
 	
+	//Generales
+	@DefaultStringValue("Ingrese una ciudad: ")
+	String labelCity();
+	
+	@DefaultStringValue("Ingrese una categoria: ")
+	String labelCategory();
+	
+	
+	//View Filtrado colaborativo
 	@DefaultStringValue("Recomendador por filtraje colaborativo")
 	String cfTitle();
 
@@ -62,5 +71,15 @@ public interface RSConstants extends Constants{
 
 	@DefaultStringValue("El campo se encuentra fuera del rango de valores v\u00E1lidos")
 	String uiFieldOutOfBoundsMessage();
+	
+	// View Recomendador basado en contenido
+	@DefaultStringValue("Recomendador basado en Contenido")
+	String contTitle();
+
+	@DefaultStringValue("Ingrese una descripci\u00F3n del sitio que busca y lo que espera encontrar en este: ")
+	String labelDescriptionBusiness();
+	
+	@DefaultStringValue("Recomendar")
+	String contentSend();
 }
 
