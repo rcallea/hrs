@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
  
+
+
 import weka.core.Instances;
 import weka.core.converters.TextDirectoryLoader;
 import weka.core.stemmers.SnowballStemmer;
@@ -455,63 +458,112 @@ public class ConnectionDB {
 		return dbl;
 	}
 	
+	private static BasicDBList getArrCategories(String categories)
+	{
+		BasicDBList dbl = new BasicDBList();
+		try {
+			
+			PrintWriter pr= new PrintWriter(new File("c://procesoCategorias//Archivos//categorias.txt"));
+			pr.println(categories);
+			pr.close();
+						 
+			 TextDirectoryLoader loader = new TextDirectoryLoader();
+			 loader.setDirectory(new File("c://procesoCategorias"));
+			 Instances dataRaw = loader.getDataSet();
+			 
+			 StringToWordVector filter = new StringToWordVector();
+			    
+			 filter.setInputFormat(dataRaw);
+			 filter.setLowerCaseTokens(true);
+			 filter.setUseStoplist(true);
+			 filter.setStemmer(snowballStemmer);
+			 
+			 Instances dataFiltered = Filter.useFilter(dataRaw, filter);
+			 
+			 for (int k = 0; k < dataFiltered.numAttributes(); k++) {
+				 String name = dataFiltered.attribute(k).name();
+				 if( name.compareTo("class") != 0)
+					 dbl.add(name);
+			 }
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		 
+		return dbl;
+	}
+	
 	public static HashMap<String,List<String[]>> getKeyWordsNegociosComparar(String category, String city)
 	{
 		HashMap<String,List<String[]>> keyWordsBusiness = new HashMap<>();
 		
-		MongoClient mongoClient = new MongoClient("localhost");
-        DB db = mongoClient.getDB("recommenderBusiness");
-        
-        DBCollection collection = db.getCollection("business");
-        
-        BasicDBObject allQuery = new BasicDBObject();
-        BasicDBObject fields = new BasicDBObject();
-        allQuery.put("city", java.util.regex.Pattern.compile(city));
-  	  	allQuery.put("categories", java.util.regex.Pattern.compile(category));
-  	  	
-  	  	fields.put("business_id", 1);
-  	  	fields.put("keyWordsCategories", 1);
-  	  	fields.put("keyWordsAttributes", 1);
-  	  	fields.put("keyWordsComments", 1);
-  	  	fields.put("keyWordsName", 1);
-		
-  	  	DBCursor cursor2 = collection.find(allQuery, fields);
-  	  	while(cursor2.hasNext()){
-  	  		DBObject cursor = cursor2.next();
-  	  		
-  	  		String businessId = (String)cursor.get("business_id");
-  	  		
-  	  		String[] wordsName = ((BasicDBList)cursor.get("keyWordsName")).toArray(new String[1]);
-  	  		
-  	  		String[] wordsCategories = new String[1]; 
-	  		DBObject objCategories = (DBObject)cursor.get("keyWordsCategories");
-	  		if(objCategories != null)
-	  			wordsCategories = ((BasicDBList)cursor.get("keyWordsCategories")).toArray(new String[1]);
-  	  		
-  	  		String[] wordsAttributes = new String[1]; 
-  	  		DBObject objAttributes = (DBObject)cursor.get("keyWordsAttributes");
-  	  		if(objAttributes != null)
-  	  			wordsAttributes = ((BasicDBList)cursor.get("keyWordsAttributes")).toArray(new String[1]);
-  	  		
-  	  		String[] wordsComments = new String[1]; 
-	  		DBObject objComments = (DBObject)cursor.get("keyWordsComments");
-	  		if(objComments != null)
-	  			wordsComments = ((BasicDBList)cursor.get("keyWordsComments")).toArray(new String[1]);
-	  		
-  	  		
-  	  		List<String[]> arrs = new ArrayList<String[]>();
-  	  		arrs.add(wordsName);
-  	  		arrs.add(wordsAttributes);
-  	  		arrs.add(wordsCategories);
-  	  		arrs.add(wordsComments);
-  	  		
-  	  		keyWordsBusiness.put(businessId, arrs);
-  	  	}
-  	  	
-  	  	mongoClient.close();
-		
-  	  	return keyWordsBusiness;
+		try {
+			
+			MongoClient mongoClient = new MongoClient("localhost");
+	        DB db = mongoClient.getDB("recommenderBusiness");
+	        
+	        DBCollection collection = db.getCollection("business");
+	        
+	        BasicDBList dbl = getArrCategories(category);
+	        
+	        BasicDBObject allQuery = new BasicDBObject();
+	        BasicDBObject fields = new BasicDBObject();
+	        allQuery.put("city", java.util.regex.Pattern.compile(city));
+	        
+	        /*Iterator<Object> it = dbl.iterator();
+	        while (it.hasNext()) {
+				String cat = (String) it.next();
+				allQuery.put("keyWordsCategories", cat);
+			}*/
+	        allQuery.put("keyWordsCategories", new BasicDBObject("$in",dbl));
+	  	  	//allQuery.put("categories", java.util.regex.Pattern.compile(category));
+	  	  	
+	  	  	fields.put("business_id", 1);
+	  	  	fields.put("keyWordsCategories", 1);
+	  	  	fields.put("keyWordsAttributes", 1);
+	  	  	fields.put("keyWordsComments", 1);
+	  	  	fields.put("keyWordsName", 1);
+			
+	  	  	DBCursor cursor2 = collection.find(allQuery, fields);
+	  	  	while(cursor2.hasNext()){
+	  	  		DBObject cursor = cursor2.next();
+	  	  		
+	  	  		String businessId = (String)cursor.get("business_id");
+	  	  		
+	  	  		String[] wordsName = ((BasicDBList)cursor.get("keyWordsName")).toArray(new String[1]);
+	  	  		
+	  	  		String[] wordsCategories = new String[1]; 
+		  		DBObject objCategories = (DBObject)cursor.get("keyWordsCategories");
+		  		if(objCategories != null)
+		  			wordsCategories = ((BasicDBList)cursor.get("keyWordsCategories")).toArray(new String[1]);
+	  	  		
+	  	  		String[] wordsAttributes = new String[1]; 
+	  	  		DBObject objAttributes = (DBObject)cursor.get("keyWordsAttributes");
+	  	  		if(objAttributes != null)
+	  	  			wordsAttributes = ((BasicDBList)cursor.get("keyWordsAttributes")).toArray(new String[1]);
+	  	  		
+	  	  		String[] wordsComments = new String[1]; 
+		  		DBObject objComments = (DBObject)cursor.get("keyWordsComments");
+		  		if(objComments != null)
+		  			wordsComments = ((BasicDBList)cursor.get("keyWordsComments")).toArray(new String[1]);
+		  		
+	  	  		
+	  	  		List<String[]> arrs = new ArrayList<String[]>();
+	  	  		arrs.add(wordsName);
+	  	  		arrs.add(wordsAttributes);
+	  	  		arrs.add(wordsCategories);
+	  	  		arrs.add(wordsComments);
+	  	  		
+	  	  		keyWordsBusiness.put(businessId, arrs);
+	  	  	}
+	  	  	
+	  	  	mongoClient.close();
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return keyWordsBusiness;
 	}
+	
 	
 	public static void getCiudades()
 	{

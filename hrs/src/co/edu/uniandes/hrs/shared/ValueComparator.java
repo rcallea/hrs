@@ -3,7 +3,7 @@ package co.edu.uniandes.hrs.shared;
 import java.util.Comparator;
 import java.util.Map;
 
-class ValueComparator implements Comparator<String> {
+public class ValueComparator implements Comparator<String> {
 
     Map<String, Double> base;
     public ValueComparator(Map<String, Double> base) {

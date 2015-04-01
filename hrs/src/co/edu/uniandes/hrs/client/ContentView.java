@@ -38,6 +38,8 @@ public class ContentView {
 	private TextArea textboxDescription=new TextArea();
 	private Button buttonSend = new Button(constants.contentSend());
 	private Controller controller;
+	private FlexTable tableResultsBusiness =new FlexTable();
+	
 	HorizontalPanel hp0=new HorizontalPanel();
 	HorizontalPanel hp1=new HorizontalPanel();
 	/**
@@ -56,12 +58,13 @@ public class ContentView {
 		FlexTable ft=new FlexTable();
 		this.textboxDescription.setWidth("100%");
 		this.textboxDescription.setHeight("200px");
+		//this.tableResultsBusiness.setStyleName("table table-striped");
 		
 		hp0.add(new HTML("<div style= 'width:150px'>" + this.htmlLabelCity + "</div>"));
-		hp0.add(new HTML(this.textboxCity + ""));
+		hp0.add(this.textboxCity);
 		
 		hp1.add(new HTML("<div style= 'width:150px'>" + this.htmlLabelCategory + "</div>"));
-		hp1.add(new HTML(this.textboxCategory + ""));
+		hp1.add(this.textboxCategory);
 		
 		this.vp.add(this.htmlUiTitle);
 		ft.setWidget(row++,column, hp0);
@@ -73,7 +76,9 @@ public class ContentView {
 
 		this.vp.add(this.htmlError);
 		this.vp.add(this.buttonSend);
+		this.vp.add(this.tableResultsBusiness);
 		this.buttonSend.addClickHandler(this.controller);
+		
 		RootPanel.get("content").add(this.vp);
 		
 		this.hidErrorMessage();
@@ -105,6 +110,7 @@ public class ContentView {
 		}
 		return retorno;
 	}
+	
 
 	/**
 	 * @return the htmlUiTitle
@@ -214,5 +220,13 @@ public class ContentView {
 
 	public void setTextboxDescription(TextArea textboxDescription) {
 		this.textboxDescription = textboxDescription;
+	}
+	
+	public FlexTable getTableResultsBusiness() {
+		return tableResultsBusiness;
+	}
+
+	public void setTableResultsBusiness(FlexTable tableResultsBusiness) {
+		this.tableResultsBusiness = tableResultsBusiness;
 	}
 }

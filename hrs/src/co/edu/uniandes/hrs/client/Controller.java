@@ -1,9 +1,11 @@
 package co.edu.uniandes.hrs.client;
 
 
+import java.util.HashMap;
 import java.util.List;
 
 import co.edu.uniandes.hrs.shared.CFParameters;
+import co.edu.uniandes.hrs.shared.ContentParameters;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -47,8 +49,9 @@ public class Controller implements ClickHandler, EntryPoint {
 				if(this.CFView.validate()) {
 					this.sendUser();
 				}
-			}else if(sender.equals(this.constants.cfSend())) {
+			}else if(sender.equals(this.constants.contentSend())) {
 				if(this.ContentView.validate()) {
+					ContentView.getTableResultsBusiness().clear();
 					this.LoadRecommendationContent();
 				}
 			}
@@ -96,25 +99,27 @@ public class Controller implements ClickHandler, EntryPoint {
 	}
 
 	private void LoadRecommendationContent() {
+		ContentParameters data=new ContentParameters();
+		
 		String nameCity = this.ContentView.getTextboxCity().getText(); 
 		String category = this.ContentView.getTextboxCategory().getText();  
 		String description = this.ContentView.getTextboxDescription().getText();
+		data=new ContentParameters(nameCity, category, description);
 		
-		/*AsyncCallback<List<String>> callbackJaccard = new AsyncCallback<List<String>>() {
+		AsyncCallback<HashMap<String, String>> callback = new AsyncCallback<HashMap<String, String>>() {
 			public void onFailure(Throwable caught) {
 		        // TODO: Do something with errors.
 			}
 
-			public void onSuccess(List<String> result) {
+			public void onSuccess(HashMap<String, String> result) {
 				int i = 0;
-				for (String stringsRecommender : result) {
-					//userUserView.getJaccard().setText(i, 0, stringsRecommender);
-					
+				for (String stringsRecommender : result.keySet()) {
+					ContentView.getTableResultsBusiness().setText(i, 0, result.get(stringsRecommender));
 					i++;
 				}
 			}
 		};
-		userUserSvc.getUserUserRecommended(userId, Integer.parseInt(numVecinos), Double.parseDouble(similarity), IndexType.JACCARD, callbackJaccard);*/
+		hrsSvc.getContentBusiness(data, callback);
 
 	}
 
