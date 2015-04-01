@@ -1,5 +1,7 @@
 package co.edu.uniandes.hrs.client;
 
+import java.util.Iterator;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Button;
@@ -9,10 +11,12 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class ContentView {
 
@@ -41,6 +45,7 @@ public class ContentView {
 	private Controller controller;
 	private FlexTable tableResultsBusiness =new FlexTable();
 	
+
 	HorizontalPanel hp0=new HorizontalPanel();
 	HorizontalPanel hp1=new HorizontalPanel();
 	/**
@@ -67,6 +72,10 @@ public class ContentView {
 		hp1.add(new HTML("<div style= 'width:150px'>" + this.htmlLabelCategory + "</div>"));
 		hp1.add(this.textboxCategory);
 		
+		this.textboxCity.setText("Phoenix");
+		this.textboxCategory.setText("health");
+		this.textboxDescription.setText("I need a clinical with a expert doctor in neurology");
+		
 		this.vp.add(this.htmlUiTitle);
 		ft.setWidget(row++,column, hp0);
 		ft.setWidget(row++,column, hp1);
@@ -84,6 +93,7 @@ public class ContentView {
 		RootPanel.get("content").add(this.vp);
 		
 		this.hidErrorMessage();
+		
 	}
 	
 	/**

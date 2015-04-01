@@ -18,6 +18,11 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class Controller implements ClickHandler, EntryPoint {
 	
@@ -114,9 +119,22 @@ public class Controller implements ClickHandler, EntryPoint {
 			public void onSuccess(HashMap<String, String> result) {
 				int i = 0;
 				for (String stringsRecommender : result.keySet()) {
-					ContentView.getTableResultsBusiness().setText(i, 0, result.get(stringsRecommender));
+					final String id = stringsRecommender;
+					Hyperlink link = new Hyperlink();  
+					link.setText(result.get(stringsRecommender));
+					link.addClickListener(new ClickListener() {
+						public void onClick(Widget sender) {
+					        PopupDeatils popup = new PopupDeatils(id);
+							popup.setStyleName("demo-popup");
+						    popup.show();
+					      }
+						
+					});
+					
+					ContentView.getTableResultsBusiness().setWidget(i, 0, link);
 					i++;
 				}
+				
 			}
 		};
 		hrsSvc.getContentBusiness(data, callback);

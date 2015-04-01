@@ -14,4 +14,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface HRSService extends RemoteService{
 	String[] sendUser(CFParameters data);
 	HashMap<String, String> getContentBusiness(ContentParameters data);
+	String[] getInformationBusiness(String businessId);
 }

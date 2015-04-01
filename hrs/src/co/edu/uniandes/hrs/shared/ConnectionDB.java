@@ -10,6 +10,8 @@ import java.util.Map;
  
 
 
+
+
 import weka.core.Instances;
 import weka.core.converters.TextDirectoryLoader;
 import weka.core.stemmers.SnowballStemmer;
@@ -681,6 +683,74 @@ public class ConnectionDB {
         }
 		
 		return name;
+	}
+	
+	public static String[] getInformationBusiness(String businessId)
+	{
+		String[] infoBusiness = new String[5];
+		
+		try {
+            
+            MongoClient mongoClient = new MongoClient("localhost");
+            DB db = mongoClient.getDB("recommenderBusiness");
+            
+            DBCollection collection = db.getCollection("business");
+            
+            BasicDBObject allQuery = new BasicDBObject();
+      	  	BasicDBObject fields = new BasicDBObject();
+      	  	allQuery.put("business_id", businessId);
+      	  	fields.put("business_id", 1);
+      	  	fields.put("name", 1);
+      	  	fields.put("full_address", 1);
+      	  	fields.put("attributes", 1);
+      	  	fields.put("stars", 1);
+      	
+      	  	DBCursor cursor2 = collection.find(allQuery, fields);
+      	  	
+      	  	while (cursor2.hasNext()) {
+      	  		DBObject cursor = cursor2.next();
+      	  		
+      	  		infoBusiness[0] = (String)cursor.get("name");
+      	  		infoBusiness[1] = (String)cursor.get("full_address");
+      	  		
+      	  		DBObject objAttributes = (DBObject)cursor.get("attributes");
+      	  		if(objAttributes != null)
+      	  		{
+      	  			String cad = "";
+      	  			for(String attr:objAttributes.keySet()){
+      	  				cad += attr+": "+objAttributes.get(attr)+"</br>";
+      	  			}
+	      	  		infoBusiness[2] = cad;
+
+      	  		}
+     	  		infoBusiness[4] = cursor.get("stars").toString();
+      	
+      	  	}
+      	  	
+      	  	//
+      	    collection = db.getCollection("review");
+            allQuery = new BasicDBObject();
+    	  	fields = new BasicDBObject();
+    	  	allQuery.put("business_id", businessId);
+    	  	fields.put("text", 1);
+    	  	
+    	  	DBCursor cursor3 = collection.find(allQuery, fields);
+    	  	
+    	  	String cadComments = "";
+    	  	while (cursor3.hasNext()) {
+    	  		DBObject cursor = cursor3.next();
+    	  		cadComments += (String)cursor.get("text") + "</br></br>";
+    	  	}
+    	  	infoBusiness[3] = cadComments;
+    	  	
+    	  	mongoClient.close();
+             
+        } 
+		catch (UnknownError ex) {
+            ex.printStackTrace();
+        }
+		
+		return infoBusiness;
 	}
 	
 }

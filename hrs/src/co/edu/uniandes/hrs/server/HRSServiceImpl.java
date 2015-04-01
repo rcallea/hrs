@@ -130,4 +130,11 @@ public class HRSServiceImpl extends RemoteServiceServlet implements HRSService {
 
 		return infoBusiness;
 	}
+
+	public String[] getInformationBusiness(String businessId)
+	{
+		
+		return ConnectionDB.getInformationBusiness(businessId);
+			
+	}
 }
