@@ -2,9 +2,10 @@ package co.edu.uniandes.hrs.client;
 
 
 import java.util.List;
-
+import co.edu.uniandes.hrs.shared.CBParametersL;
+import co.edu.uniandes.hrs.shared.CBResultL;
 import co.edu.uniandes.hrs.shared.CFParameters;
-
+import co.edu.uniandes.hrs.shared.CFResult;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -20,6 +21,7 @@ import com.google.gwt.user.client.ui.Button;
 public class Controller implements ClickHandler, EntryPoint {
 	
 	private CFView CFView;
+	private CBLView cblView;
 	private ContentView ContentView;
 	private RSConstants constants = GWT.create(RSConstants.class);
 
@@ -32,6 +34,10 @@ public class Controller implements ClickHandler, EntryPoint {
 		this.CFView.setController(this);
 		this.CFView.generateUI();
 		
+		this.cblView=new CBLView();
+		this.cblView.setController(this);
+		this.cblView.generateUI();
+
 		this.ContentView=new ContentView();
 		this.ContentView.setController(this);
 		this.ContentView.generateUI();
@@ -45,19 +51,23 @@ public class Controller implements ClickHandler, EntryPoint {
 			
 			if(sender.equals(this.constants.cfSend())) {
 				if(this.CFView.validate()) {
-					this.sendUser();
+					this.sendCFData();
+				}
+			}
+			else if(sender.equals(this.constants.cblSend())) {
+				if(this.cblView.validate()) {
+					this.sendCBLData();
 				}
 			}else if(sender.equals(this.constants.cfSend())) {
 				if(this.ContentView.validate()) {
 					this.LoadRecommendationContent();
 				}
 			}
-		}
-		
+		}		
 		
 	}
 	
-	private void sendUser() {
+	private void sendCFData() {
 		if(hrsSvc==null) hrsSvc = GWT.create(HRSService.class);
 		CFParameters data=new CFParameters();
 		
@@ -69,27 +79,29 @@ public class Controller implements ClickHandler, EntryPoint {
 					Integer.parseInt(this.CFView.getTextboxUser().getText()));
 		} catch (NumberFormatException nfe) {}
 		
-		AsyncCallback<String[]> callback = new AsyncCallback<String[]>() {
+		AsyncCallback<CFResult> callback = new AsyncCallback<CFResult>() {
 			public void onFailure(Throwable caught) {
 				//Aquí poner el llamado en caso de que salga mal
 			}
 
-			public void onSuccess(String[] result) {
+			@Override
+			public void onSuccess(CFResult result) {
 				//Aquí poner el llamado en caso de que salga bien
-				updateUsers(result);
+				updateCFResult(result);
 			}
 		};
 
 		// Make the call to the stock price service.
-		hrsSvc.sendUser(data, callback);
+		hrsSvc.initCF(data, callback);
 	}
 
-	private void updateUsers(String[] result) {
-		this.CFView.getHtmlPrecisionResult().setText(result[0]);
-		this.CFView.getHtmlRecallResult().setText(result[1]);
+	private void updateCFResult(CFResult result) {
+		this.CFView.getHtmlPrecisionResult().setText("" + result.getPrecision());
+		this.CFView.getHtmlRecallResult().setText("" + result.getRecall());
 		String text="";
-		for(int i=2;i<result.length;i++) {
-			text+=result[i] + " ";
+		String[] resultData=result.getData();
+		for(int i=2;i<resultData.length;i++) {
+			text+=resultData[i] + " ";
 		}
 		this.CFView.getHtmlResultListResult().setText(text);
 		
@@ -117,5 +129,41 @@ public class Controller implements ClickHandler, EntryPoint {
 		userUserSvc.getUserUserRecommended(userId, Integer.parseInt(numVecinos), Double.parseDouble(similarity), IndexType.JACCARD, callbackJaccard);*/
 
 	}
+	private void sendCBLData() {
+		if(hrsSvc==null) hrsSvc = GWT.create(HRSService.class);
+		CBParametersL data=new CBParametersL();
+		
+		try {
+			data=new CBParametersL(this.cblView.getListboxMinTermFrequency(),
+					this.cblView.getListboxMinDocFrequency(),
+					this.cblView.getListBoxMinWordLen(),
+					this.cblView.getTextboxUser());
+		} catch (NumberFormatException nfe) {}
+		
+		AsyncCallback<CBResultL> callback = new AsyncCallback<CBResultL>() {
+			public void onFailure(Throwable caught) {
+				//Aquí poner el llamado en caso de que salga mal
+			}
 
+			@Override
+			public void onSuccess(CBResultL result) {
+				//Aquí poner el llamado en caso de que salga bien
+				updateCBLResult(result);
+			}
+		};
+
+		// Make the call to the stock price service.
+		hrsSvc.initCBL(data, callback);
+	}
+
+	private void updateCBLResult(CBResultL result) {
+		this.cblView.getHtmlPrecisionResult().setText("" + result.getPrecision());
+		this.cblView.getHtmlRecallResult().setText("" + result.getRecall());
+		String text="";
+		String[] resultData=result.getData();
+		for(int i=2;i<resultData.length;i++) {
+			text+=resultData[i] + " ";
+		}
+		this.cblView.getHtmlResultListResult().setText(text);
+	}
 }
