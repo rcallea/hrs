@@ -28,6 +28,7 @@ public class ContentView {
 	//private ListBox listBoxDispositivo=new ListBox();
 	private VerticalPanel vp=new VerticalPanel();
 	private HTML htmlUiTitle=new HTML("<h2>" + constants.contTitle() + "</h2>");
+	private HTML htmlUiSubTitle=new HTML("<br/><h3> Nuestras recomendaciones </h3>");
 	private HTML htmlLabelCity=new HTML(constants.labelCity());
 	private HTML htmlLabelCategory=new HTML(constants.labelCategory());
 	private HTML htmlLabelDescription=new HTML(constants.labelDescriptionBusiness());
@@ -76,6 +77,7 @@ public class ContentView {
 
 		this.vp.add(this.htmlError);
 		this.vp.add(this.buttonSend);
+		this.vp.add(this.htmlUiSubTitle);
 		this.vp.add(this.tableResultsBusiness);
 		this.buttonSend.addClickHandler(this.controller);
 		
@@ -228,5 +230,12 @@ public class ContentView {
 
 	public void setTableResultsBusiness(FlexTable tableResultsBusiness) {
 		this.tableResultsBusiness = tableResultsBusiness;
+	}
+	public HTML getHtmlUiSubTitle() {
+		return htmlUiSubTitle;
+	}
+
+	public void setHtmlUiSubTitle(HTML htmlUiSubTitle) {
+		this.htmlUiSubTitle = htmlUiSubTitle;
 	}
 }
