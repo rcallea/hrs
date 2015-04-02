@@ -63,6 +63,9 @@ public interface RSConstants extends Constants{
 	@DefaultStringValue("N\u00FAmero de vecinos")
 	String cfNeighbors();
 
+	@DefaultStringValue("N\u00FAmero de calificaciones a utilizar")
+	String cfGradeNumber();
+
 	@DefaultStringValue("Tipo de medida")
 	String cfMeasureType();
 

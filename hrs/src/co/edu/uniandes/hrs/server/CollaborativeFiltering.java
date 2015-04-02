@@ -2,17 +2,18 @@ package co.edu.uniandes.hrs.server;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.recommender101.data.DataModel;
-import org.recommender101.data.DefaultDataLoader;
+import org.recommender101.data.Rating;
 import org.recommender101.recommender.baseline.NearestNeighbors;
 
 import co.edu.uniandes.hrs.shared.CFParameters;
 import co.edu.uniandes.hrs.shared.CFResult;
 
 public class CollaborativeFiltering {
-
-	private static final long serialVersionUID = -2112585968730455525L;
+	private float precision=0;
+	private float recall=0;
 
 	public CFResult initCF(CFParameters data) {
 		CFResult ret=new CFResult();
@@ -20,11 +21,16 @@ public class CollaborativeFiltering {
 		// Simple test method.
 		System.out.println("Iniciando CF");
 		try {
-			//TODO cambiar la manera de llenar el datamodel
 			DataModel dm = new DataModel();
 			DefaultDataLoader loader = new DefaultDataLoader();
-			loader.setMinNumberOfRatingsPerUser("10");
-			loader.setFilename("C:\\Users\\Ricardo\\Documents\\Maestría\\05SRecomendacion\\workspace\\recommender101\\data\\movielens\\ratings.txt");
+			loader.setMinNumberOfRatingsPerUser(data.getRatings());
+			String datasetSize="80";
+			if(data.getDatasetSize().startsWith("6")) {
+				datasetSize="60";
+			} else if(data.getDatasetSize().startsWith("7")) {
+				datasetSize="70";
+			}
+			loader.setFilename("./data/g" + datasetSize + "t.txt");
 			System.out.println("Cargando datamodel");
 			loader.loadData(dm);
 			NearestNeighbors rec = new NearestNeighbors();
@@ -36,16 +42,17 @@ public class CollaborativeFiltering {
 			System.out.println("Iniciando recomendador CF");
 			rec.init();
 			
-			ArrayList<Integer> recommendations=(ArrayList<Integer>)rec.recommendItems(data.getUser());
+			ArrayList<Integer> recommendations=(ArrayList<Integer>)rec.recommendItems(loader.getUserId().get(data.getUser()));
 			String[] retList=new String[recommendations.size()];
 			
 			System.out.println("Adicionando resultados a la lista CF");
 			for(int i=0;i<recommendations.size();i++) {
-				retList[i]="" + recommendations.get(i);
+				retList[i]="" + loader.getBusiness().get(recommendations.get(i));
 			}
 
 			System.out.println("Calculando precision y recall a CF");
-			ret=new CFResult(retList, precisionCF(recommendations), recallCF(recommendations));
+			this.precisionRecallCF(data, recommendations);
+			ret=new CFResult(retList, this.precision, this.recall);
 			
 		}
 		catch (Exception e) {
@@ -56,13 +63,48 @@ public class CollaborativeFiltering {
 		return(ret);
 	}
 	
-	public float precisionCF(List<Integer> recommendations) {
-		return(-1);
-	}
+	public void precisionRecallCF(CFParameters data, List<Integer> recommendations) {
+		this.precision=0;
+		this.recall=0;
+		System.out.println("Iniciando mediciones");
+		try {
+			DataModel dm = new DataModel();
+			DefaultDataLoader loader = new DefaultDataLoader();
+			loader.setMinNumberOfRatingsPerUser(data.getRatings());
+			String datasetSize="80";
+			if(data.getDatasetSize().startsWith("6")) {
+				datasetSize="60";
+			} else if(data.getDatasetSize().startsWith("7")) {
+				datasetSize="70";
+			}
+			loader.setFilename("./data/g" + datasetSize + "v.txt");
+			System.out.println("Cargando datamodel");
+			loader.loadVerifyData(dm, data.getUser());
 
-	public float recallCF(List<Integer> recommendations) {
-		return(-2);
-	}
-	
+			System.out.println("Iniciando comparación para mediciones");
+			
+			Set<Rating> ratings=dm.getRatings();
+			int tamRatings=0;
+			int found=0;
+			for(Rating r:ratings) {
+				tamRatings++;
+				int currentBusiness=r.user;
+				for(int i=0;i<recommendations.size();i++) {
+					int currentRecommendation=recommendations.get(i);
+					if(currentRecommendation==currentBusiness) {
+						found++;
+						i=recommendations.size();
+					}
+				}
+			}
+
+			this.precision = ((float)found)/((float)(found + recommendations.size()));
+			this.recall = ((float)found)/((float)(found + tamRatings));
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Fin de Mediciones");
+	}	
 	
 }

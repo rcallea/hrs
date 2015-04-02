@@ -28,6 +28,7 @@ public class CFView {
 	private VerticalPanel vp=new VerticalPanel();
 	private HTML htmlUiTitle=new HTML("<h2>" + constants.cfTitle() + "</h2>");
 	private HTML htmlDatasetSize=new HTML(constants.cfDatasetSize());
+	private HTML htmlGradeNumber=new HTML(constants.cfGradeNumber());
 	private HTML htmlNeighbors=new HTML(constants.cfNeighbors());
 	private HTML htmlMeasureType=new HTML(constants.cfMeasureType());
 	private HTML htmlRecommenderType=new HTML(constants.cfRecommenderType());
@@ -38,6 +39,7 @@ public class CFView {
 	private HTML htmlError=new HTML();
 	private ListBox listboxDatasetSize=new ListBox();
 	private TextBox textboxNeighbors=new TextBox();
+	private TextBox textboxGradeNumber=new TextBox();
 	private ListBox listBoxMeasureType=new ListBox();
 	private ListBox listBoxRecommenderType=new ListBox();
 	private TextBox textboxUser=new TextBox();
@@ -63,13 +65,15 @@ public class CFView {
 		FlexTable ft=new FlexTable();
 		
 		this.setListboxDatasetSize(constants.cfDatasetSizeValues());
-		this.textboxNeighbors.setText("10");;
+		this.textboxNeighbors.setText("5");
+		this.textboxGradeNumber.setText("70");
 		this.setListBoxMeasureType(constants.cfMeasureTypeValues());
 		this.setListBoxRecommenderType(constants.cfRecommenderTypeValues());
-		this.textboxUser.setText("2");;
+		this.textboxUser.setText("_7el1cOgnfkNfmZKi277bQ");;
 		
 		this.vp.add(this.htmlUiTitle);
 		ft.setWidget(row++,column, this.htmlDatasetSize);
+		ft.setWidget(row++,column, this.htmlGradeNumber);
 		ft.setWidget(row++,column, this.htmlNeighbors);
 		ft.setWidget(row++,column, this.htmlMeasureType);
 		ft.setWidget(row++,column, this.htmlRecommenderType);
@@ -81,6 +85,7 @@ public class CFView {
 		column++;
 		row=0;
 		ft.setWidget(row++, column, this.listboxDatasetSize);
+		ft.setWidget(row++, column, this.textboxGradeNumber);
 		ft.setWidget(row++, column, this.textboxNeighbors);
 		ft.setWidget(row++, column, this.listBoxMeasureType);
 		ft.setWidget(row++, column, this.listBoxRecommenderType);
@@ -129,9 +134,22 @@ public class CFView {
 			} catch (NumberFormatException nfe) {}
 		}
 
-		if(!this.getTextboxUser().getText().matches("[0-9]+")) {
+		if(!this.getTextboxGradeNumber().getText().matches("[0-9]+")) {
 			retorno=false;
-			message += "<li>" + this.constants.uiFieldError() + "\" " + this.constants.cfUser() + "\": " + this.constants.uiFieldErrorMessage() + " [" + constants.cfNeighborsMinValue() + "," + constants.cfNeighborsMaxValue() + "]" + "</li>";
+			message += "<li>" + this.constants.uiFieldError() + "\" " + this.constants.cfNeighbors() + "\": " + this.constants.uiFieldErrorMessage() + "</li>";
+		} else {
+			try {
+				int value=Integer.parseInt(this.getTextboxGradeNumber().getText());
+				if(value<constants.cfNeighborsMinValue() || value>constants.cfNeighborsMaxValue()) {
+					retorno=false;
+					message += "<li>" + this.constants.uiFieldError() + "\" " + this.constants.cfNeighbors() + "\". " + this.constants.uiFieldOutOfBoundsMessage(); 
+				}
+			} catch (NumberFormatException nfe) {}
+		}
+
+		if(this.getTextboxUser().getText().trim().length()<3) {
+			retorno=false;
+			message += "<li>" + this.constants.uiFieldError() + "\" " + this.constants.cfUser() + "\": " + this.constants.uiFieldErrorMessage() + "</li>";
 		}
 		
 		
@@ -184,6 +202,20 @@ public class CFView {
 	 */
 	public void setHtmlNeighbors(HTML htmlNeighbors) {
 		this.htmlNeighbors = htmlNeighbors;
+	}
+
+	/**
+	 * @return the htmlGradeNumber
+	 */
+	public HTML getHtmlGradeNumber() {
+		return htmlGradeNumber;
+	}
+
+	/**
+	 * @param htmlGradeNumber the htmlGradeNumber to set
+	 */
+	public void setHtmlGradeNumber(HTML htmlGradeNumber) {
+		this.htmlGradeNumber = htmlGradeNumber;
 	}
 
 	/**
@@ -312,6 +344,20 @@ public class CFView {
 	 */
 	public void setTextboxNeighbors(TextBox textboxNeighbors) {
 		this.textboxNeighbors = textboxNeighbors;
+	}
+
+	/**
+	 * @return the textboxGradeNumber
+	 */
+	public TextBox getTextboxGradeNumber() {
+		return textboxGradeNumber;
+	}
+
+	/**
+	 * @param textboxGradeNumber the textboxGradeNumber to set
+	 */
+	public void setTextboxGradeNumber(TextBox textboxGradeNumber) {
+		this.textboxGradeNumber = textboxGradeNumber;
 	}
 
 	/**

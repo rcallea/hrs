@@ -74,9 +74,10 @@ public class Controller implements ClickHandler, EntryPoint {
 		try {
 			data=new CFParameters(this.CFView.getListboxDatasetSize(),
 					this.CFView.getTextboxNeighbors().getText(),
+					this.CFView.getTextboxGradeNumber().getText(),
 					this.CFView.getListBoxMeasureType(),
 					this.CFView.getListBoxRecommenderType(),
-					Integer.parseInt(this.CFView.getTextboxUser().getText()));
+					this.CFView.getTextboxUser().getText());
 		} catch (NumberFormatException nfe) {}
 		
 		AsyncCallback<CFResult> callback = new AsyncCallback<CFResult>() {

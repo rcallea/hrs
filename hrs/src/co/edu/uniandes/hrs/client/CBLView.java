@@ -24,7 +24,7 @@ public class CBLView {
 	 * Form elements: Label, textbox, dropdown, button
 	 */
 	private VerticalPanel vp=new VerticalPanel();
-	private HTML htmlUiTitle=new HTML(constants.cfTitle());
+	private HTML htmlUiTitle=new HTML(constants.cblTitle());
 	private HTML htmlMinTermFrequency=new HTML(constants.cblMinTermFrequency());
 	private HTML htmlMinDocFrequency=new HTML(constants.cblMinDocFrequency());
 	private HTML htmlMinWordLen=new HTML(constants.cblMinWordLen());
