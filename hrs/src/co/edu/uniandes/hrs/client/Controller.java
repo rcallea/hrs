@@ -1,20 +1,14 @@
 package co.edu.uniandes.hrs.client;
 
 
-import java.util.List;
 import co.edu.uniandes.hrs.shared.CBParametersL;
 import co.edu.uniandes.hrs.shared.CBResultL;
 import co.edu.uniandes.hrs.shared.CFParameters;
 import co.edu.uniandes.hrs.shared.CFResult;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 
@@ -135,7 +129,9 @@ public class Controller implements ClickHandler, EntryPoint {
 		CBParametersL data=new CBParametersL();
 		
 		try {
-			data=new CBParametersL(this.cblView.getListboxMinTermFrequency(),
+			data=new CBParametersL(this.cblView.getListboxDatasetSize(),
+					this.cblView.getTextboxWaitTime(),
+					this.cblView.getListboxMinTermFrequency(),
 					this.cblView.getListboxMinDocFrequency(),
 					this.cblView.getListBoxMinWordLen(),
 					this.cblView.getTextboxUser());

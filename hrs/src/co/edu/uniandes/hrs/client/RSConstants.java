@@ -12,6 +12,12 @@ public interface RSConstants extends Constants{
 	@DefaultStringValue("<h3>Recomendador Basado en contenido usando More Like This de Lucene</h3>")
 	String cblTitle();
 
+	@DefaultStringValue("Tama\u00F1o del dataset de pruebas")
+	String cblDatasetSize();
+
+	@DefaultStringValue("Tiempo de espera m\u00E1ximo en minutos")
+	String cblWaitTime();
+
 	@DefaultStringValue("M\u00EDnimo de frecuencia de t\u00E9rminos")
 	String cblMinTermFrequency();
 

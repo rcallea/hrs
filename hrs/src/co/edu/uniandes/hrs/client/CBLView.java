@@ -25,6 +25,8 @@ public class CBLView {
 	 */
 	private VerticalPanel vp=new VerticalPanel();
 	private HTML htmlUiTitle=new HTML(constants.cblTitle());
+	private HTML htmlDatasetSize=new HTML(constants.cblDatasetSize());
+	private HTML htmlWaitTime=new HTML(constants.cblWaitTime());
 	private HTML htmlMinTermFrequency=new HTML(constants.cblMinTermFrequency());
 	private HTML htmlMinDocFrequency=new HTML(constants.cblMinDocFrequency());
 	private HTML htmlMinWordLen=new HTML(constants.cblMinWordLen());
@@ -33,6 +35,8 @@ public class CBLView {
 	private HTML htmlRecall=new HTML(constants.cblRecall());
 	private HTML htmlResultList=new HTML(constants.cblResultList());
 	private HTML htmlError=new HTML();
+	private ListBox listboxDatasetSize=new ListBox();
+	private TextBox textboxWaitTime=new TextBox();
 	private ListBox listboxMinTermFrequency=new ListBox();
 	private ListBox listboxMinDocFrequency=new ListBox();
 	private ListBox listBoxMinWordLen=new ListBox();
@@ -58,12 +62,16 @@ public class CBLView {
 		int column=0;
 		FlexTable ft=new FlexTable();
 		
+		this.setListboxDatasetSize(constants.cfDatasetSizeValues());
+		this.textboxWaitTime.setText("1");
 		this.setListboxMinTermFrequency(constants.cblMinTermFrequencyValues());
 		this.setListboxMinDocFrequency(constants.cblMinDocFrequencyValues());;
 		this.setListBoxMinWordLen(constants.cblMinWordLenValues());
-		this.textboxUser.setText("2");;
+		this.textboxUser.setText("_7el1cOgnfkNfmZKi277bQ");;
 		
 		this.vp.add(this.htmlUiTitle);
+		ft.setWidget(row++,column, this.htmlDatasetSize);
+		ft.setWidget(row++,column, this.htmlWaitTime);
 		ft.setWidget(row++,column, this.htmlMinTermFrequency);
 		ft.setWidget(row++,column, this.htmlMinDocFrequency);
 		ft.setWidget(row++,column, this.htmlMinWordLen);
@@ -74,6 +82,8 @@ public class CBLView {
 		
 		column++;
 		row=0;
+		ft.setWidget(row++, column, this.listboxDatasetSize);
+		ft.setWidget(row++, column, this.textboxWaitTime);
 		ft.setWidget(row++, column, this.listboxMinTermFrequency);
 		ft.setWidget(row++, column, this.listboxMinDocFrequency);
 		ft.setWidget(row++, column, this.listBoxMinWordLen);
@@ -109,11 +119,15 @@ public class CBLView {
 	public boolean validate() {
 		boolean retorno=true;
 		String message="<ul>";
-		if(!this.textboxUser.getText().matches("[0-9]+")) {
+		if(!this.textboxWaitTime.getText().matches("[0-9]+")) {
 			retorno=false;
-			message += "<li>" + this.constants.uiFieldError() + "\" " + this.constants.cfUser() + "\": " + this.constants.uiFieldErrorMessage() + " [" + constants.cfNeighborsMinValue() + "," + constants.cfNeighborsMaxValue() + "]" + "</li>";
+			message += "<li>" + this.constants.uiFieldError() + "\" " + this.constants.cblWaitTime() + "\": " + this.constants.uiFieldErrorMessage() + "</li>";
 		}
 		
+		if(this.textboxUser.getText().length()<3) {
+			retorno=false;
+			message += "<li>" + this.constants.uiFieldError() + "\" " + this.constants.cblUser() + "\": " + this.constants.uiFieldErrorMessage() + "</li>";
+		}
 		
 		if(retorno==false) {
 			this.showErrorMessage(message + "</ul>");
@@ -136,6 +150,20 @@ public class CBLView {
 	 */
 	public void setHtmlUiTitle(HTML htmlUiTitle) {
 		this.htmlUiTitle = htmlUiTitle;
+	}
+
+	/**
+	 * @return the htmlDatasetSize
+	 */
+	public HTML getHtmlDatasetSize() {
+		return htmlDatasetSize;
+	}
+
+	/**
+	 * @param htmlDatasetSize the htmlDatasetSize to set
+	 */
+	public void setHtmlDatasetSize(HTML htmlDatasetSize) {
+		this.htmlDatasetSize = htmlDatasetSize;
 	}
 
 	/**
@@ -237,6 +265,40 @@ public class CBLView {
 	}
 
 	/**
+	 * @return the listboxDatasetSize
+	 */
+	public String getListboxDatasetSize() {
+		return this.listboxDatasetSize.getValue(this.listboxDatasetSize.getSelectedIndex());
+	}
+
+	/**
+	 * @param listboxDatasetSize the listboxDatasetSize to set
+	 */
+	public void setListboxDatasetSize(String[] datasetSizeValues) {
+		for(int i=0;i<datasetSizeValues.length;i++) {
+			this.listboxDatasetSize.addItem(datasetSizeValues[i],datasetSizeValues[i]);
+		}
+	}
+
+	/**
+	 * @return the textboxWaitTime
+	 */
+	public float getTextboxWaitTime() {
+		float ret=0;
+		try {
+			ret=Float.parseFloat(this.textboxWaitTime.getText());
+		} catch (NumberFormatException nfe) {}
+		return ret;
+	}
+
+	/**
+	 * @param textboxUser the textboxWaitTime to set
+	 */
+	public void setTextboxWaitTime(TextBox textboxWaitTime) {
+		this.textboxWaitTime = textboxWaitTime;
+	}
+
+	/**
 	 * @return the listboxMinTermFrequency
 	 */
 	public int getListboxMinTermFrequency() {
@@ -305,12 +367,8 @@ public class CBLView {
 	/**
 	 * @return the textboxUser
 	 */
-	public int getTextboxUser() {
-		int ret=0;
-		try {
-			ret=Integer.parseInt(this.textboxUser.getText());
-		} catch (NumberFormatException nfe) {}
-		return ret;
+	public String getTextboxUser() {
+		return this.textboxUser.getText();
 	}
 
 	/**

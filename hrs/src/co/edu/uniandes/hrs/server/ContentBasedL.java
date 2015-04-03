@@ -15,6 +15,10 @@ package co.edu.uniandes.hrs.server;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Hashtable;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -36,6 +40,13 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+
 import co.edu.uniandes.hrs.shared.CBParametersL;
 import co.edu.uniandes.hrs.shared.CBResultL;
 
@@ -45,12 +56,13 @@ public class ContentBasedL {
 	private StandardAnalyzer analyzer;
 	private IndexWriterConfig config;
 	private CBResultL cblr=new CBResultL();
+	private ArrayList<Document> userDocs;
 
 	public CBResultL initCB(CBParametersL data) throws IOException {
 		start(); //Inicia los analizadores
 		
 		//TODO modificar las entradas para que sean las de mongo
-		writerEntries();
+		writerEntries(data.getUser(), (int)(data.getWaitTime()*60));
 		
 		findSilimar(data);
 		return(this.cblr);
@@ -65,25 +77,48 @@ public class ContentBasedL {
 		//indexDir = FSDirectory.open(new File("/Path/to/luceneIndex/")); //write on disk
 	}
 	
-	public void writerEntries() throws IOException{
+	public void writerEntries(String user, int secondsToWait) throws IOException{
 		IndexWriter indexWriter = new IndexWriter(indexDir, config);
 		indexWriter.commit();
 		
-		Document doc1 = createDocument("1","doduck","all what i love is prototype your a one interesting idea");
-		Document doc2 = createDocument("2","doduck","I think I love programming");
-		Document doc3 = createDocument("3","We do", "prototype");
-		Document doc4 = createDocument("4","We love", "this is our challange");
-		indexWriter.addDocument(doc1);
-		indexWriter.addDocument(doc2);
-		indexWriter.addDocument(doc3);
-		indexWriter.addDocument(doc4);
-		
-		indexWriter.commit();
-		indexWriter.forceMerge(100, true);
-		indexWriter.close();
+		MongoClient mongoClient = new MongoClient("localhost");
+		DB db = mongoClient.getDB("recommenderBusiness");
+		DBCollection coll = db.getCollection("review");
+		BasicDBObject allQuery = new BasicDBObject().append("stars", new BasicDBObject("$gt",3));
+		allQuery.append("user_id", new BasicDBObject("$ne",user));
+		BasicDBObject fields = new BasicDBObject();
+		int posicionConsulta=1;
+		fields.put("_id", posicionConsulta++);
+		fields.put("user_id", posicionConsulta++);
+		fields.put("business_id", posicionConsulta++);
+		fields.put("text", posicionConsulta);
+		DBCursor cursor = coll.find(allQuery, fields);
+
+		try {
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.SECOND, secondsToWait);
+			Date now = new Date();
+			while(cursor.hasNext() && now.before(calendar.getTime())) {
+				try {
+					DBObject dbo=cursor.next();
+					String _id=dbo.get("_id").toString();
+					String user_id=dbo.get("user_id").toString();
+					String business_id=dbo.get("business_id").toString();
+					String text=dbo.get("text").toString();
+					Document doc = createDocument(_id, user_id, business_id, text);
+					indexWriter.addDocument(doc);
+				} catch (NullPointerException e) {}
+				now = new Date();
+			}
+			indexWriter.commit();
+			indexWriter.forceMerge(100, true);
+			indexWriter.close();
+		} finally {
+			cursor.close();
+		}
 	}
 
-	private Document createDocument(String id, String title, String content) {
+	private Document createDocument(String id, String user, String business, String content) {
 		FieldType type = new FieldType();
 		type.setIndexed(true);
 		type.setStored(true);
@@ -91,42 +126,107 @@ public class ContentBasedL {
 		
 		Document doc = new Document();
 		doc.add(new StringField("id", id, Store.YES));
-		doc.add(new Field("title", title, type));
+		doc.add(new Field("user_id", user, type));
+		doc.add(new Field("business_id", user, type));
 		doc.add(new Field("content", content, type));
 		return doc;
 	}
 
+	private ArrayList<Document> getUserDocs(String user) {
+		ArrayList<Document> ret=new ArrayList<Document>();
+		MongoClient mongoClient = new MongoClient("localhost");
+		DB db = mongoClient.getDB("recommenderBusiness");
+		DBCollection coll = db.getCollection("review");
+		BasicDBObject allQuery = new BasicDBObject().append("stars", new BasicDBObject("$gt",3));
+		allQuery.append("user_id", user);
+		BasicDBObject fields = new BasicDBObject();
+		int posicionConsulta=1;
+		fields.put("_id", posicionConsulta++);
+		fields.put("user_id", posicionConsulta++);
+		fields.put("business_id", posicionConsulta++);
+		fields.put("text", posicionConsulta);
+		DBCursor cursor = coll.find(allQuery, fields);
 
+		try {
+			while(cursor.hasNext()) {
+				try {
+					DBObject dbo=cursor.next();
+					String _id=dbo.get("_id").toString();
+					String user_id=dbo.get("user_id").toString();
+					String business_id=dbo.get("business_id").toString();
+					String text=dbo.get("text").toString();
+					Document doc = createDocument(_id, user_id, business_id, text);
+					ret.add(doc);
+				} catch (NullPointerException e) {}
+			}
+		} finally {
+			cursor.close();
+		}
+		return(ret);
+	}
+	
 	private void findSilimar(CBParametersL searchForSimilar) throws IOException {
+		float precision=0;
+		float recall=0;
+		int found=0;
+		Hashtable <String,Integer> businessReferenced=new Hashtable <String,Integer>();
 		IndexReader reader = DirectoryReader.open(indexDir);
 		IndexSearcher indexSearcher = new IndexSearcher(reader);
+		ArrayList<Document> userDocs=this.getUserDocs(searchForSimilar.getUser());
+		ArrayList<Document> userVerification=new ArrayList<Document>();
+		ArrayList<Document> result=new ArrayList<Document>();
 		
 		MoreLikeThis mlt = new MoreLikeThis(reader);
 	    mlt.setMinTermFreq(searchForSimilar.getMinTermFrequency());
 	    mlt.setMinDocFreq(searchForSimilar.getMinDocFrequency());
 	    mlt.setMinWordLen(searchForSimilar.getMinWordLen());
-	    mlt.setFieldNames(new String[]{"title", "content"});
+	    mlt.setFieldNames(new String[]{"business_id", "content"});
 	    mlt.setAnalyzer(analyzer);
 	    
-	    
-	    Reader sReader = new StringReader("doduck prototype");
-	    Query query = mlt.like(null,sReader);
-		
-	    TopDocs topDocs = indexSearcher.search(query,10);
-	    
-	    for ( ScoreDoc scoreDoc : topDocs.scoreDocs ) {
-	        Document aSimilar = indexSearcher.doc( scoreDoc.doc );
-	        String similarTitle = aSimilar.get("title");
-	        String similarContent = aSimilar.get("content");
-	        
-	        System.out.println("====similar finded====");
-	        System.out.println("title: "+ similarTitle);
-	        System.out.println("content: "+ similarContent);
+	    double docsSelected=1;
+	    if(searchForSimilar.getDatasetSize().startsWith("6")) {
+	    	docsSelected = userDocs.size() * 0.6;
+	    } else if(searchForSimilar.getDatasetSize().startsWith("7")) {
+	    	docsSelected = userDocs.size() * 0.7;
+	    } else {
+	    	docsSelected = userDocs.size() * 0.8;
 	    }
-	    String[] rrrr=mlt.retrieveInterestingTerms(0);
-	    for(int i=0;i<rrrr.length;i++)
-	    		System.out.println(rrrr[i]);
-	    this.cblr.setData(rrrr);
+	    
+	    int posicion=0;
+	    while((double)posicion<docsSelected) {
+	    	Document doc=userDocs.get(posicion);
+		    Query query = mlt.like("content",new StringReader(doc.get("content")));
+		    TopDocs topDocs = indexSearcher.search(query,20);
+		    
+		    for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
+		        Document aSimilar = indexSearcher.doc( scoreDoc.doc );
+		        if(businessReferenced.get(aSimilar.get("business_id"))==null) {
+		        	businessReferenced.put(aSimilar.get("business_id"),1);
+		        }
+		        result.add(aSimilar);
+		    }
+	    	posicion++;
+	    }
+	    while(posicion<userDocs.size()) {
+	    	userVerification.add(userDocs.get(posicion));
+	    	posicion++;
+	    }
+	    
+	    String[] totalResult=new String[result.size()];
+	    for(int i=0;i<result.size();i++) {
+	    	totalResult[i]=result.get(i).get("business_id");
+	    }
+	    this.cblr.setData(totalResult);
+
+		for(int i=0; i<userVerification.size();i++) {
+			if(businessReferenced.get(userVerification.get(i).get("business_id"))!=null) {
+				found++;
+			}
+		}
+		precision=((float)found)/((float)(found + result.size()));
+		recall=((float)found)/((float)(found + userDocs.size()));
+		this.cblr.setPrecision(precision);
+		this.cblr.setRecall(recall);
 	}
 	
 }
