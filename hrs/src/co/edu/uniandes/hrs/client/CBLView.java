@@ -119,7 +119,7 @@ public class CBLView {
 	public boolean validate() {
 		boolean retorno=true;
 		String message="<ul>";
-		if(!this.textboxWaitTime.getText().matches("[0-9]+")) {
+		if(!this.textboxWaitTime.getText().matches("[0-9]+(\\.[0-9]*)?")) {
 			retorno=false;
 			message += "<li>" + this.constants.uiFieldError() + "\" " + this.constants.cblWaitTime() + "\": " + this.constants.uiFieldErrorMessage() + "</li>";
 		}

@@ -44,15 +44,33 @@ public class CollaborativeFiltering {
 			
 			ArrayList<Integer> recommendations=(ArrayList<Integer>)rec.recommendItems(loader.getUserId().get(data.getUser()));
 			String[] retList=new String[recommendations.size()];
+			String[] retListData=new String[recommendations.size()];
 			
 			System.out.println("Adicionando resultados a la lista CF");
 			for(int i=0;i<recommendations.size();i++) {
 				retList[i]="" + loader.getBusiness().get(recommendations.get(i));
 			}
+			int maxDataSize=50;
+			String[] retListSearch;
+			if(retList.length<=maxDataSize) {
+				maxDataSize=retList.length;
+			}
+			retListData=new String[maxDataSize];
+			retListSearch=new String[maxDataSize];
+			
+			for(int i=0;i<maxDataSize;i++) {
+				retListSearch[i]=retList[i];
+			}
+			
+			ArrayList<String[]> retListAllData=MongoDB.getBusinessInfo(retListSearch);
+			for(int i=0;i<retListAllData.size();i++) {
+				String[] businessData=retListAllData.get(i);
+				retListData[i]=businessData[7] + ": " +businessData[1] + " (" + businessData[4] + " - " + businessData[5] + ")"; 
+			}
 
 			System.out.println("Calculando precision y recall a CF");
 			this.precisionRecallCF(data, recommendations);
-			ret=new CFResult(retList, this.precision, this.recall);
+			ret=new CFResult(retList, retListData, this.precision, this.recall);
 			
 		}
 		catch (Exception e) {

@@ -59,11 +59,13 @@ public class ContentBasedL {
 	private ArrayList<Document> userDocs;
 
 	public CBResultL initCB(CBParametersL data) throws IOException {
+		System.out.println("Iniciando recomendador");
 		start(); //Inicia los analizadores
 		
-		//TODO modificar las entradas para que sean las de mongo
+		System.out.println("Obteniendo datos de los usuarios");
 		writerEntries(data.getUser(), (int)(data.getWaitTime()*60));
 		
+		System.out.println("Recomendando elementos parecidos");
 		findSilimar(data);
 		return(this.cblr);
 	}
@@ -116,6 +118,7 @@ public class ContentBasedL {
 		} finally {
 			cursor.close();
 		}
+		mongoClient.close();
 	}
 
 	private Document createDocument(String id, String user, String business, String content) {
@@ -162,6 +165,7 @@ public class ContentBasedL {
 		} finally {
 			cursor.close();
 		}
+		mongoClient.close();
 		return(ret);
 	}
 	
@@ -175,6 +179,8 @@ public class ContentBasedL {
 		ArrayList<Document> userDocs=this.getUserDocs(searchForSimilar.getUser());
 		ArrayList<Document> userVerification=new ArrayList<Document>();
 		ArrayList<Document> result=new ArrayList<Document>();
+		ArrayList<String> queryText=new ArrayList<String>();
+		ArrayList<String> resultText=new ArrayList<String>();
 		
 		MoreLikeThis mlt = new MoreLikeThis(reader);
 	    mlt.setMinTermFreq(searchForSimilar.getMinTermFrequency());
@@ -197,13 +203,14 @@ public class ContentBasedL {
 	    	Document doc=userDocs.get(posicion);
 		    Query query = mlt.like("content",new StringReader(doc.get("content")));
 		    TopDocs topDocs = indexSearcher.search(query,20);
-		    
+		    queryText.add(doc.get("business_id") + ": " + doc.get("content"));
 		    for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
 		        Document aSimilar = indexSearcher.doc( scoreDoc.doc );
 		        if(businessReferenced.get(aSimilar.get("business_id"))==null) {
 		        	businessReferenced.put(aSimilar.get("business_id"),1);
 		        }
 		        result.add(aSimilar);
+		        resultText.add(aSimilar.get("business_id") + ": " + aSimilar.get("content"));
 		    }
 	    	posicion++;
 	    }
@@ -217,7 +224,26 @@ public class ContentBasedL {
 	    	totalResult[i]=result.get(i).get("business_id");
 	    }
 	    this.cblr.setData(totalResult);
+		
+		int maxDataSize=50;
+		String[] retListSearch;
+		if(totalResult.length<=maxDataSize) {
+			maxDataSize=totalResult.length;
+		}
+		String[] retListData=new String[maxDataSize];
+		retListSearch=new String[maxDataSize];
+		
+		for(int i=0;i<maxDataSize;i++) {
+			retListSearch[i]=totalResult[i];
+		}
+		
+		ArrayList<String[]> retListAllData=MongoDB.getBusinessInfo(retListSearch);
+		for(int i=0;i<retListAllData.size();i++) {
+			String[] businessData=retListAllData.get(i);
+			retListData[i]=businessData[7] + ": " +businessData[1] + " (" + businessData[4] + " - " + businessData[5] + ")"; 
+		}
 
+		System.out.println("Calculando precision y recall");
 		for(int i=0; i<userVerification.size();i++) {
 			if(businessReferenced.get(userVerification.get(i).get("business_id"))!=null) {
 				found++;
@@ -225,8 +251,19 @@ public class ContentBasedL {
 		}
 		precision=((float)found)/((float)(found + result.size()));
 		recall=((float)found)/((float)(found + userDocs.size()));
+		this.cblr.setDataInfo(retListData);
 		this.cblr.setPrecision(precision);
 		this.cblr.setRecall(recall);
+		this.cblr.setUserDocs(this.arrayListToStringArray(queryText));
+		this.cblr.setOtherDocs(this.arrayListToStringArray(resultText));
+		System.out.println("Fin CBL");
 	}
 	
+	private String[] arrayListToStringArray(ArrayList<String> al) {
+		String[] ret=new String[al.size()];
+		for(int i=0;i<ret.length;i++) {
+			ret[i]=al.get(i);
+		}
+		return(ret);
+	}
 }

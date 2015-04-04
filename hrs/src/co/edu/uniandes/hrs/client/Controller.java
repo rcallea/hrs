@@ -5,12 +5,14 @@ import co.edu.uniandes.hrs.shared.CBParametersL;
 import co.edu.uniandes.hrs.shared.CBResultL;
 import co.edu.uniandes.hrs.shared.CFParameters;
 import co.edu.uniandes.hrs.shared.CFResult;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HTML;
 
 public class Controller implements ClickHandler, EntryPoint {
 	
@@ -72,7 +74,10 @@ public class Controller implements ClickHandler, EntryPoint {
 					this.CFView.getListBoxMeasureType(),
 					this.CFView.getListBoxRecommenderType(),
 					this.CFView.getTextboxUser().getText());
-		} catch (NumberFormatException nfe) {}
+			this.CFView.getHtmlPrecisionResult().setHTML("<strong>Calculando...</strong>");
+			this.CFView.getHtmlRecallResult().setHTML("<strong>Calculando...</strong>");
+			this.CFView.getHtmlResultListResult().setHTML("<strong>Sin resultados</strong>");
+	} catch (NumberFormatException nfe) {}
 		
 		AsyncCallback<CFResult> callback = new AsyncCallback<CFResult>() {
 			public void onFailure(Throwable caught) {
@@ -93,13 +98,12 @@ public class Controller implements ClickHandler, EntryPoint {
 	private void updateCFResult(CFResult result) {
 		this.CFView.getHtmlPrecisionResult().setText("" + result.getPrecision());
 		this.CFView.getHtmlRecallResult().setText("" + result.getRecall());
-		String text="";
-		String[] resultData=result.getData();
+		String text="Mostrando " + result.getDataInfo().length + " recomendaciones de " + result.getData().length + " resultados.<br/>";
+		String[] resultData=result.getDataInfo();
 		for(int i=2;i<resultData.length;i++) {
-			text+=resultData[i] + " ";
+			text+=resultData[i] + "<br/>";
 		}
-		this.CFView.getHtmlResultListResult().setText(text);
-		
+		this.CFView.getHtmlResultListResult().setHTML(text);
 	}
 
 	private void LoadRecommendationContent() {
@@ -135,6 +139,9 @@ public class Controller implements ClickHandler, EntryPoint {
 					this.cblView.getListboxMinDocFrequency(),
 					this.cblView.getListBoxMinWordLen(),
 					this.cblView.getTextboxUser());
+			this.cblView.getHtmlPrecisionResult().setHTML("<strong>Calculando...</strong>");
+			this.cblView.getHtmlRecallResult().setHTML("<strong>Calculando...</strong>");
+			this.cblView.getHtmlResultListResult().setHTML("<strong>Sin resultados</strong>");
 		} catch (NumberFormatException nfe) {}
 		
 		AsyncCallback<CBResultL> callback = new AsyncCallback<CBResultL>() {
@@ -157,10 +164,33 @@ public class Controller implements ClickHandler, EntryPoint {
 		this.cblView.getHtmlPrecisionResult().setText("" + result.getPrecision());
 		this.cblView.getHtmlRecallResult().setText("" + result.getRecall());
 		String text="";
+		int tam=10;
 		String[] resultData=result.getData();
 		for(int i=2;i<resultData.length;i++) {
 			text+=resultData[i] + " ";
 		}
-		this.cblView.getHtmlResultListResult().setText(text);
+		
+		String[] userText=result.getUserDocs();
+		if(tam>userText.length) {
+			tam=userText.length;
+		}
+		
+		text="Mostrando " + tam + " reviews de " + userText.length + " para verificar<br/>";
+		for(int i=0;i<tam;i++) {
+			text=text+userText[i]+"<br/>";
+		}
+		
+		tam=50;
+		String[] resultText=result.getOtherDocs();
+		if(tam>resultText.length) {
+			tam=resultText.length;
+		}
+		
+		text=text + "<hr/>Mostrando " + tam + " reviews de " + resultText.length + " recomendados<br/>";
+		for(int i=0;i<tam;i++) {
+			text=text+resultText[i]+"<br/>";
+		}
+		
+		this.cblView.getHtmlResultListResult().setHTML(text);
 	}
 }

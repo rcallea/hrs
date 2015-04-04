@@ -2,6 +2,7 @@ package co.edu.uniandes.hrs.server;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.ArrayList;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -24,7 +25,7 @@ public class MongoDB {
 		DBCursor cursor = coll.find(allQuery, fields);
 		try {
 			int i=0;
-			System.out.println("Usuario\tNecodio\tCalif");
+			System.out.println("Usuario\tNegocio\tCalif");
 			while(cursor.hasNext()) {
 			   DBObject singleField=(DBObject) cursor.next();
 			   System.out.print("" + singleField.get("user_id"));
@@ -120,8 +121,58 @@ public class MongoDB {
 		} catch (Exception e) {}
 	}
 	
+	public static ArrayList<String[]> getBusinessInfo(String[] business_id) {
+		String[] getFields={"business_id", "name", "full_address", "categories", "city", "state", "stars", "type", "keyWordsName", "keyWordsCategories"};
+		ArrayList<String[]> ret=new ArrayList<String[]>();
+		MongoClient mongoClient = new MongoClient("localhost");
+		DB db = mongoClient.getDB("recommenderBusiness");
+		DBCollection coll = db.getCollection("business");
+		BasicDBObject fields = new BasicDBObject();
+		int fieldPosition=1;
+		for(;fieldPosition<getFields.length + 1; fieldPosition++) {
+			fields.put(getFields[fieldPosition-1], fieldPosition);
+		}
+		for(int i=0;i<business_id.length;i++) {
+			BasicDBObject allQuery = new BasicDBObject();
+			//System.out.println("Buscando: " + business_id[i]);
+			allQuery.append("business_id", business_id[i]);
+			DBCursor cursor = coll.find(allQuery, fields);
+			try {
+				//Recorre los resultados
+				while(cursor.hasNext()) {
+				   DBObject singleField=(DBObject) cursor.next();
+				   String[] retrievedData=new String[getFields.length];
+				   for(fieldPosition=0;fieldPosition<getFields.length;fieldPosition++) {
+					   try {
+						   retrievedData[fieldPosition] = singleField.get(getFields[fieldPosition]).toString();
+					   } catch (NullPointerException e) {
+						   retrievedData[fieldPosition] = "Empty";
+					   }
+				   }
+				   ret.add(retrievedData);
+				   System.out.print("" + singleField.get(getFields[0]));
+				   System.out.println("\t" + singleField.get(getFields[1]));
+			   }
+			} catch (Exception e) {
+				System.out.println(e);
+				cursor.close();
+			} finally {
+			   cursor.close();
+			}
+			
+		}
+		mongoClient.close();
+		return(ret);
+	}
+	
 	public static void main(String[] args) {
-		new MongoDB().classifyTestData();
+		//new MongoDB().classifyTestData();
+		String[] rrr={"rv7CY8G_XibTx82YhuqQRw", "4GdYyHKukZiMiQu0KJ0Jnw"};
+		ArrayList<String[]> bi=MongoDB.getBusinessInfo(rrr);
+		for(int i=0;i<bi.size();i++) {
+			String[] aaa=bi.get(i);
+			System.out.println(aaa[1]);
+		}
 	}
 
 }
