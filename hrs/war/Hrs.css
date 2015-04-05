@@ -37,37 +37,13 @@ h1 {
 /**********************************
 *            Popup Demo
 ***********************************/
-.table-center
-{
-    margin-left            :    auto;
-    margin-right           :    auto;
-}
 .demo-popup
 {
-    background-color       :    #ffc;
-    border                 :    3px solid #009;
-}
-.demo-Composite
-{
-    margin                 :    0 auto;
-}
-.demo-popup-header
-{
-    background-color       :    #ff0;
-    font-size              :    90%;
-    font-weight            :    bold;
-    border-bottom          :    3px solid #009;
-    padding                :    5px;
-    text-align             :    center;
-}
-.demo-popup-message
-{
-    font-size              :    80%;
-    padding                :    15px;
-}
-.demo-popup-footer
-{
-    padding                :    5px;
-    text-align             :    center;
-    width                  :    100%;
+    background-color	:	#EDFDFF;
+    border              :   3px solid #989B9B;
+    width				:	50%;
+    padding				: 	15px;
+    text-align			:	justify;
+    margin-left         :   auto;
+    margin-right        :   auto;
 }

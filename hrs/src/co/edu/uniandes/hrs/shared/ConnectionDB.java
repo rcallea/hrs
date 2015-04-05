@@ -3,6 +3,7 @@ package co.edu.uniandes.hrs.shared;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,8 +13,14 @@ import java.util.Map;
 
 
 
+
+
+
+import javax.swing.text.html.ListView;
+
 import weka.core.Instances;
 import weka.core.converters.TextDirectoryLoader;
+import weka.core.pmml.Array;
 import weka.core.stemmers.SnowballStemmer;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
@@ -427,7 +434,7 @@ public class ConnectionDB {
 
 	public static String[] ProcesarRequerimiento(String requerimiento)
 	{
-		String[] dbl = null;
+		String[] dbl = new String[1];
 		try{
 				PrintWriter pr= new PrintWriter(new File("c://procesoRequerimiento//Archivos//requerimiento.txt"));
 				pr.println(requerimiento);
@@ -446,12 +453,23 @@ public class ConnectionDB {
 	
 				Instances dataFiltered = Filter.useFilter(dataRaw, filter);
 	
-				dbl = new String[dataFiltered.numAttributes()];
-				for (int k = 0; k < dataFiltered.numAttributes(); k++) {
+				dbl = new String[dataFiltered.numAttributes() - 1];
+				
+				int i = 0;
+				while(i < dataFiltered.numAttributes())
+				{
+					String name = dataFiltered.attribute(i).name();
+					if (name.compareTo("class") != 0)
+						dbl[i - 1] = name;
+					
+					i++;
+				}
+				
+				/*for (int k = 0; k < dataFiltered.numAttributes(); k++) {
 					String name = dataFiltered.attribute(k).name();
 					if (name.compareTo("class") != 0)
 						dbl[k] = name;
-				}
+				}*/
 		}
 		catch(Exception ex){
 			ex.printStackTrace();
@@ -494,7 +512,7 @@ public class ConnectionDB {
 		return dbl;
 	}
 	
-	public static HashMap<String,List<String[]>> getKeyWordsNegociosComparar(String category, String city)
+	public static HashMap<String,List<String[]>> getKeyWordsNegociosComparar(String category, String city, String[] listCF)
 	{
 		HashMap<String,List<String[]>> keyWordsBusiness = new HashMap<>();
 		
@@ -510,15 +528,20 @@ public class ConnectionDB {
 	        BasicDBObject allQuery = new BasicDBObject();
 	        BasicDBObject fields = new BasicDBObject();
 	        allQuery.put("city", java.util.regex.Pattern.compile(city));
-	        
-	        /*Iterator<Object> it = dbl.iterator();
-	        while (it.hasNext()) {
-				String cat = (String) it.next();
-				allQuery.put("keyWordsCategories", cat);
-			}*/
 	        allQuery.put("keyWordsCategories", new BasicDBObject("$in",dbl));
-	  	  	//allQuery.put("categories", java.util.regex.Pattern.compile(category));
-	  	  	
+	        
+	        if(listCF != null)
+  	  		{
+	        	BasicDBList dblCF = new BasicDBList();
+  	  			for(String cf:listCF){
+  	  				dblCF.add(cf);
+  	  			}
+  	  			
+  	  			allQuery.put("business_id", new BasicDBObject("$in",dblCF));
+  	  		}
+	        
+	        //allQuery.put("business_id", java.util.regex.Pattern.compile("PtxLwzXAZjF046g5kgmxlA"));
+	        
 	  	  	fields.put("business_id", 1);
 	  	  	fields.put("keyWordsCategories", 1);
 	  	  	fields.put("keyWordsAttributes", 1);
@@ -528,31 +551,30 @@ public class ConnectionDB {
 	  	  	DBCursor cursor2 = collection.find(allQuery, fields);
 	  	  	while(cursor2.hasNext()){
 	  	  		DBObject cursor = cursor2.next();
-	  	  		
 	  	  		String businessId = (String)cursor.get("business_id");
 	  	  		
-	  	  		String[] wordsName = ((BasicDBList)cursor.get("keyWordsName")).toArray(new String[1]);
+	  	  		String[] wordsName = ((BasicDBList)cursor.get("keyWordsName")).toArray(new String[0]);
 	  	  		
-	  	  		String[] wordsCategories = new String[1]; 
+	  	  		String[] wordsCategories = new String[0]; 
 		  		DBObject objCategories = (DBObject)cursor.get("keyWordsCategories");
 		  		if(objCategories != null)
-		  			wordsCategories = ((BasicDBList)cursor.get("keyWordsCategories")).toArray(new String[1]);
+		  			wordsCategories = ((BasicDBList)cursor.get("keyWordsCategories")).toArray(new String[0]);
 	  	  		
 	  	  		String[] wordsAttributes = new String[1]; 
 	  	  		DBObject objAttributes = (DBObject)cursor.get("keyWordsAttributes");
 	  	  		if(objAttributes != null)
-	  	  			wordsAttributes = ((BasicDBList)cursor.get("keyWordsAttributes")).toArray(new String[1]);
+	  	  			wordsAttributes = ((BasicDBList)cursor.get("keyWordsAttributes")).toArray(new String[0]);
 	  	  		
 	  	  		String[] wordsComments = new String[1]; 
 		  		DBObject objComments = (DBObject)cursor.get("keyWordsComments");
 		  		if(objComments != null)
-		  			wordsComments = ((BasicDBList)cursor.get("keyWordsComments")).toArray(new String[1]);
+		  			wordsComments = ((BasicDBList)cursor.get("keyWordsComments")).toArray(new String[0]);
 		  		
 	  	  		
 	  	  		List<String[]> arrs = new ArrayList<String[]>();
 	  	  		arrs.add(wordsName);
-	  	  		arrs.add(wordsAttributes);
 	  	  		arrs.add(wordsCategories);
+	  	  		arrs.add(wordsAttributes);
 	  	  		arrs.add(wordsComments);
 	  	  		
 	  	  		keyWordsBusiness.put(businessId, arrs);

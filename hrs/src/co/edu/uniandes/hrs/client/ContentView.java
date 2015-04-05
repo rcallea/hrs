@@ -31,7 +31,7 @@ public class ContentView {
 	//private FlexTable ft=new FlexTable();
 	//private ListBox listBoxDispositivo=new ListBox();
 	private VerticalPanel vp=new VerticalPanel();
-	private HTML htmlUiTitle=new HTML("<h2>" + constants.contTitle() + "</h2>");
+	private HTML htmlUiTitle=new HTML("<div style='width:776px'><h3>" + constants.contTitle() + "</h3></div>");
 	private HTML htmlUiSubTitle=new HTML("<br/><h3> Nuestras recomendaciones </h3>");
 	private HTML htmlLabelCity=new HTML(constants.labelCity());
 	private HTML htmlLabelCategory=new HTML(constants.labelCategory());
