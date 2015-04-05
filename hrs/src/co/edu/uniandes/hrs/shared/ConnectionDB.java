@@ -10,12 +10,6 @@ import java.util.List;
 import java.util.Map;
  
 
-
-
-
-
-
-
 import javax.swing.text.html.ListView;
 
 import weka.core.Instances;
@@ -449,7 +443,7 @@ public class ConnectionDB {
 				filter.setInputFormat(dataRaw);
 				filter.setLowerCaseTokens(true);
 				filter.setUseStoplist(true);
-				filter.setStemmer(snowballStemmer);
+				filter.setStemmer(new weka.core.stemmers.SnowballStemmer());
 	
 				Instances dataFiltered = Filter.useFilter(dataRaw, filter);
 	
@@ -512,7 +506,7 @@ public class ConnectionDB {
 		return dbl;
 	}
 	
-	public static HashMap<String,List<String[]>> getKeyWordsNegociosComparar(String category, String city, String[] listCF)
+	public static HashMap<String,List<String[]>> getKeyWordsNegociosComparar(String category, String city, String day, String hour, String[] listCF)
 	{
 		HashMap<String,List<String[]>> keyWordsBusiness = new HashMap<>();
 		
@@ -540,9 +534,15 @@ public class ConnectionDB {
   	  			allQuery.put("business_id", new BasicDBObject("$in",dblCF));
   	  		}
 	        
+	        if(day.compareTo("Select") != 0)
+	        {
+	        	allQuery.put("hours", new BasicDBObject("$exists", day));
+	        }
+	        
 	        //allQuery.put("business_id", java.util.regex.Pattern.compile("PtxLwzXAZjF046g5kgmxlA"));
 	        
 	  	  	fields.put("business_id", 1);
+	  	  	fields.put("hours", 1);
 	  	  	fields.put("keyWordsCategories", 1);
 	  	  	fields.put("keyWordsAttributes", 1);
 	  	  	fields.put("keyWordsComments", 1);
@@ -552,6 +552,27 @@ public class ConnectionDB {
 	  	  	while(cursor2.hasNext()){
 	  	  		DBObject cursor = cursor2.next();
 	  	  		String businessId = (String)cursor.get("business_id");
+	  	  		
+	  	  		if(hour.compareTo("Select") != 0)
+	  	  		{
+	  	  			DBObject objDays = (DBObject)cursor.get("hours");
+	  	  			if(objDays.containsKey(day))
+	  	  			{	
+	  	  				DBObject objHours = (DBObject)objDays.get(day);
+	  	  				String objOpen = (String)objHours.get("open");
+	  	  				String objClose = (String)objHours.get("close");
+	  	  				
+	  	  				int horaInicio = Integer.parseInt(objOpen.split(":")[0]);
+	  	  				int horaFin = Integer.parseInt(objClose.split(":")[0]);
+	  	  				int horaUsuario = Integer.parseInt(hour.split(":")[0]);
+	  	  				
+	  	  				if(horaUsuario < horaInicio || horaUsuario > horaFin)
+	  	  					continue;
+	  	  			}
+	  	  			else
+	  	  				continue;
+	  	  		}
+	  	  		
 	  	  		
 	  	  		String[] wordsName = ((BasicDBList)cursor.get("keyWordsName")).toArray(new String[0]);
 	  	  		
@@ -709,7 +730,7 @@ public class ConnectionDB {
 	
 	public static String[] getInformationBusiness(String businessId)
 	{
-		String[] infoBusiness = new String[5];
+		String[] infoBusiness = new String[6];
 		
 		try {
             
@@ -726,6 +747,7 @@ public class ConnectionDB {
       	  	fields.put("full_address", 1);
       	  	fields.put("attributes", 1);
       	  	fields.put("stars", 1);
+      	  	fields.put("hours", 1);
       	
       	  	DBCursor cursor2 = collection.find(allQuery, fields);
       	  	
@@ -746,6 +768,17 @@ public class ConnectionDB {
 
       	  		}
      	  		infoBusiness[4] = cursor.get("stars").toString();
+     	  		
+     	  		DBObject objHours = (DBObject)cursor.get("hours");
+      	  		if(objHours != null)
+      	  		{
+      	  			String cad = "";
+      	  			for(String attr:objHours.keySet()){
+      	  				cad += attr + ": " + objHours.get(attr)+"</br>";
+      	  			}
+	      	  		infoBusiness[5] = cad;
+
+      	  		}
       	
       	  	}
       	  	

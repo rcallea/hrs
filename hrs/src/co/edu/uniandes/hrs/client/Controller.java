@@ -135,10 +135,13 @@ public class Controller implements ClickHandler, EntryPoint {
 	private void LoadRecommendationContent() {
 		ContentParameters data=new ContentParameters();
 		
-		String nameCity = this.ContentView.getTextboxCity().getText(); 
+		String nameCity = this.ContentView.getListboxCity(); 
 		String category = this.ContentView.getTextboxCategory().getText();  
 		String description = this.ContentView.getTextboxDescription().getText();
-		data=new ContentParameters(nameCity, category, description);
+		String day = this.ContentView.getListboxDay();
+		String hour = this.ContentView.getListboxHour();
+		
+		data=new ContentParameters(nameCity, category, description, day, hour);
 		
 		AsyncCallback<List<ContentResult>> callback = new AsyncCallback<List<ContentResult>>() {
 			public void onFailure(Throwable caught) {
@@ -146,21 +149,28 @@ public class Controller implements ClickHandler, EntryPoint {
 			}
 
 			public void onSuccess(List<ContentResult> result) {
-				int i = 0;
-				for (final ContentResult contentResult : result) {
-					Hyperlink link = new Hyperlink();  
-					link.setText(contentResult.getName());
-					link.addClickListener(new ClickListener() {
-						public void onClick(Widget sender) {
-					        PopupDeatils popup = new PopupDeatils(contentResult);
-							popup.setStyleName("demo-popup");
-						    popup.show();
-					      }
+
+				if(result.size() == 0){
+					ContentView.getHtmlUiSubTitle().setHTML("<br/><h3> No se encontraron resultados</h3>");
+				}
+				else{
+					ContentView.getHtmlUiSubTitle().setHTML("<br/><h3> Nuestras recomendaciones</h3>");
+					int i = 0;
+					for (final ContentResult contentResult : result) {
+						Hyperlink link = new Hyperlink();  
+						link.setText(contentResult.getName());
+						link.addClickListener(new ClickListener() {
+							public void onClick(Widget sender) {
+						        PopupDeatils popup = new PopupDeatils(contentResult);
+								popup.setStyleName("demo-popup");
+							    popup.show();
+						      }
+							
+						});
 						
-					});
-					
-					ContentView.getTableResultsBusiness().setWidget(i, 0, link);
-					i++;
+						ContentView.getTableResultsBusiness().setWidget(i, 0, link);
+						i++;
+					}
 				}
 			}
 		};
@@ -172,12 +182,13 @@ public class Controller implements ClickHandler, EntryPoint {
 		ContentParameters contentData=new ContentParameters();
 		
 		String userId = this.HybridView.getTextboxUser().getText();
-		String nameCity = this.HybridView.getTextboxCity().getText(); 
+		String nameCity = this.HybridView.getListboxCity(); 
 		String category = this.HybridView.getTextboxCategory().getText();  
 		String description = this.HybridView.getTextboxDescription().getText();
-		contentData=new ContentParameters(nameCity, category, description);
+		String day = this.ContentView.getListboxDay();
+		String hour = this.ContentView.getListboxHour();
 		
-		///**
+		contentData=new ContentParameters(nameCity, category, description, day,hour);
 		
 		CFParameters cfData=new CFParameters();
 		cfData=new CFParameters(this.CFView.getListboxDatasetSize(),
@@ -187,28 +198,34 @@ public class Controller implements ClickHandler, EntryPoint {
 		this.CFView.getListBoxRecommenderType(),
 		userId);
 			
-		///****
+		
 		AsyncCallback<List<ContentResult>> callback = new AsyncCallback<List<ContentResult>>() {
 			public void onFailure(Throwable caught) {
 		        // TODO: Do something with errors.
 			}
 
 			public void onSuccess(List<ContentResult> result) {
-				int i = 0;
-				for (final ContentResult contentResult : result) {
-					Hyperlink link = new Hyperlink();  
-					link.setText(contentResult.getName());
-					link.addClickListener(new ClickListener() {
-						public void onClick(Widget sender) {
-					        PopupDeatils popup = new PopupDeatils(contentResult);
-							popup.setStyleName("demo-popup");
-						    popup.show();
-					      }
+				if(result.size() == 0){
+					HybridView.getHtmlUiSubTitle().setHTML("<br/><h3> No se encontraron resultados</h3>");
+				}
+				else{
+					HybridView.getHtmlUiSubTitle().setHTML("<br/><h3> Nuestras recomendaciones</h3>");
+					int i = 0;
+					for (final ContentResult contentResult : result) {
+						Hyperlink link = new Hyperlink();  
+						link.setText(contentResult.getName());
+						link.addClickListener(new ClickListener() {
+							public void onClick(Widget sender) {
+						        PopupDeatils popup = new PopupDeatils(contentResult);
+								popup.setStyleName("demo-popup");
+							    popup.show();
+						      }
+							
+						});
 						
-					});
-					
-					HybridView.getTableResultsBusiness().setWidget(i, 0, link);
-					i++;
+						HybridView.getTableResultsBusiness().setWidget(i, 0, link);
+						i++;
+					}
 				}
 			}
 		};

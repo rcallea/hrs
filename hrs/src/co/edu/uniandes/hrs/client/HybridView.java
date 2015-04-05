@@ -30,7 +30,7 @@ public class HybridView {
 	 */
 	private VerticalPanel vp=new VerticalPanel();
 	private HTML htmlUiTitle=new HTML("<div style='width:776px'><h3>" + constants.contTitle() + "</h3></div>");
-	private HTML htmlUiSubTitle=new HTML("<br/><h3> Nuestras recomendaciones </h3>");
+	private HTML htmlUiSubTitle=new HTML("<br/><h3></h3>");
 	private HTML htmlLabelUsuario=new HTML(constants.cblUser());
 	private HTML htmlLabelCity=new HTML(constants.labelCity());
 	private HTML htmlLabelCategory=new HTML(constants.labelCategory());
@@ -38,8 +38,10 @@ public class HybridView {
 	private HTML htmlResultList=new HTML(constants.cfResultList());
 	private HTML htmlError=new HTML();
 	private TextBox textboxUser=new TextBox();
-	private TextBox textboxCity=new TextBox();
+	private ListBox listboxCity=new ListBox();
 	private TextBox textboxCategory=new TextBox();
+	private ListBox listboxDay=new ListBox();
+	private ListBox listboxHour=new ListBox();
 	private TextArea textboxDescription=new TextArea();
 	private Button buttonSend = new Button(constants.hybridSend());
 	private Controller controller;
@@ -49,6 +51,8 @@ public class HybridView {
 	HorizontalPanel hp0=new HorizontalPanel();
 	HorizontalPanel hp1=new HorizontalPanel();
 	HorizontalPanel hp2=new HorizontalPanel();
+	HorizontalPanel hp3=new HorizontalPanel();
+	HorizontalPanel hp4=new HorizontalPanel();
 	/**
 	 * @param controller the controller to set
 	 */
@@ -65,10 +69,18 @@ public class HybridView {
 		FlexTable ft=new FlexTable();
 		this.textboxDescription.setWidth("100%");
 		this.textboxDescription.setHeight("200px");
-		//this.tableResultsBusiness.setStyleName("table table-striped");
+		this.listboxCity.setWidth("250px");
+		this.textboxCategory.setWidth("250px");
+		this.textboxUser.setWidth("250px");
+		this.listboxDay.setWidth("150px");
+		this.listboxHour.setWidth("150px");
+		
+		this.setListboxCity(constants.lstCities());
+		this.setListboxDay(constants.lstDays());
+		this.setListboxHour(constants.lstHours());
 		
 		hp0.add(new HTML("<div style= 'width:150px'>" + this.htmlLabelCity + "</div>"));
-		hp0.add(this.textboxCity);
+		hp0.add(this.listboxCity);
 		
 		hp1.add(new HTML("<div style= 'width:150px'>" + this.htmlLabelCategory + "</div>"));
 		hp1.add(this.textboxCategory);
@@ -76,7 +88,12 @@ public class HybridView {
 		hp2.add(new HTML("<div style= 'width:150px'>" + this.htmlLabelUsuario + "</div>"));
 		hp2.add(this.textboxUser);
 		
-		this.textboxCity.setText("Phoenix");
+		hp3.add(new HTML("<div style= 'width:150px'>Dia: </div>"));
+		hp3.add(this.listboxDay);
+		
+		hp4.add(new HTML("<div style= 'width:150px'>Hora: </div>"));
+		hp4.add(this.listboxHour);
+		
 		this.textboxCategory.setText("health");
 		this.textboxDescription.setText("I need a clinical with a expert doctor in neurology");
 		
@@ -84,6 +101,8 @@ public class HybridView {
 		ft.setWidget(row++,column, hp2);
 		ft.setWidget(row++,column, hp0);
 		ft.setWidget(row++,column, hp1);
+		ft.setWidget(row++,column, hp3);
+		ft.setWidget(row++,column, hp4);
 		ft.setWidget(row++,column, this.htmlLabelDescription);
 		ft.setWidget(row++, column, this.textboxDescription);
 		ft.setStyleName("table table-striped");
@@ -215,14 +234,6 @@ public class HybridView {
 		this.buttonSend = buttonSend;
 	}
 
-	public TextBox getTextboxCity() {
-		return textboxCity;
-	}
-
-	public void setTextboxCity(TextBox textboxCity) {
-		this.textboxCity = textboxCity;
-	}
-
 	public TextBox getTextboxCategory() {
 		return textboxCategory;
 	}
@@ -261,5 +272,28 @@ public class HybridView {
 		this.textboxUser = textboxUser;
 	}
 
-
+	public String getListboxCity() {
+		return this.listboxCity.getValue(this.listboxCity.getSelectedIndex());
+	}
+	public void setListboxCity(String[] listboxCity) {
+		for(int i=0;i<listboxCity.length;i++) {
+			this.listboxCity.addItem(listboxCity[i]);
+		}
+	}
+	public String getListboxHour() {
+		return this.listboxHour.getValue(this.listboxHour.getSelectedIndex());
+	}
+	public String getListboxDay() {
+		return this.listboxDay.getValue(this.listboxDay.getSelectedIndex());
+	}
+	public void setListboxDay(String[] listboxDay) {
+		for(int i=0;i<listboxDay.length;i++) {
+			this.listboxDay.addItem(listboxDay[i]);
+		}
+	}
+	public void setListboxHour(String[] listboxHour) {
+		for(int i=0;i<listboxHour.length;i++) {
+			this.listboxHour.addItem(listboxHour[i]);
+		}
+	}
 }

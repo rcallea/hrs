@@ -61,7 +61,7 @@ public class HRSServiceImpl extends RemoteServiceServlet implements HRSService {
 		
 		String[] arrReq = ConnectionDB.ProcesarRequerimiento(data.getDescription());
 		
-		Map<String,List<String[]>> arrCompare = ConnectionDB.getKeyWordsNegociosComparar(data.getCategory(), data.getCity(), listCF);
+		Map<String,List<String[]>> arrCompare = ConnectionDB.getKeyWordsNegociosComparar(data.getCategory(), data.getCity(), data.getDay(), data.getHour(), listCF);
 				
 		double weightName = 1;
 		double weightCategories = 1;

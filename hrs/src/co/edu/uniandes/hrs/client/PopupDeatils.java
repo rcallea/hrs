@@ -26,6 +26,7 @@ public class PopupDeatils extends PopupPanel {
 	private HTML htmlUiSubTitle = new HTML("<br/><b>Adrress</b>");
 	private Label htmlLabelName = new Label();
 	private Label htmlLabelAddress = new Label();
+	private Label htmlLabelHours = new Label();
 	private Label htmlLabelAttributes = new Label();
 	private Label htmlLabelComments = new Label();
 	private Label htmlLabelProcess = new Label();
@@ -54,6 +55,7 @@ public class PopupDeatils extends PopupPanel {
 				htmlLabelAddress.setText(result[1]);
 				htmlLabelAttributes.setText(result[2]);
 				htmlLabelComments.setText(result[3]);
+				htmlLabelHours.setText(result[5]);
 				
 				String process = "Arreglo solicitud del usuario: " + Arrays.toString(contentResultAux.getKeyWordsRequest()) + "</br>";
 				process += "</br>";
@@ -79,6 +81,12 @@ public class PopupDeatils extends PopupPanel {
 				vp.add(new HTML("</tr>"));
 				vp.add(new HTML("<tr>"));
 				vp.add(new HTML("<td>" + htmlLabelAddress.getText() + "</br></br></td>"));
+				vp.add(new HTML("</tr>"));
+				vp.add(new HTML("<tr>"));
+				vp.add(new HTML("<td><b>Hours</b></td>"));
+				vp.add(new HTML("</tr>"));
+				vp.add(new HTML("<tr>"));
+				vp.add(new HTML("<td>" + htmlLabelHours.getText() + "</br></br></td>"));
 				vp.add(new HTML("</tr>"));
 				vp.add(new HTML("<tr>"));
 				vp.add(new HTML("<td><b>Attributes</b></td>"));
