@@ -120,17 +120,48 @@ public class HRSServiceImpl extends RemoteServiceServlet implements HRSService {
 		return arrResult; 
 	}
 	
-	public String[] getInformationBusiness(String businessId)
-	{
-		
+	public String[] getInformationBusiness(String businessId) {
 		return ConnectionDB.getInformationBusiness(businessId);
-			
+	}
+	
+	public String[] CFCBMix(CFResult cfResult, CBResultL cbResult) {
+		String[] ret={};
+		String[] cb=cbResult.getData();
+		String[] cf=cfResult.getData();
+		if(cb.length==0) {
+			ret=cf;
+		} else if(cf.length==0) {
+			ret=cb;
+		} else {
+			ArrayList<String> al=new ArrayList<String>();
+			int i=0;
+			while(i<cf.length || i<cb.length) {
+				if(i<cb.length) {
+					al.add(cb[i]);
+				}
+				if(i<cf.length) {
+					al.add(cf[i]);
+				}
+				i++;
+			}
+			ret=new String[al.size()];
+			for(i=0;i<al.size();i++) {
+				ret[i]=al.get(i);
+			}
+		}
+		return ret;
 	}
 
-	public List<ContentResult> getHybridBusiness(CFParameters cfData, ContentParameters contentData)
-	{
-		String[] listCF = new CollaborativeFiltering().initCF_hybrid(cfData);
+	public List<ContentResult> getHybridBusiness(CFParameters cfData, CBParametersL cbData, ContentParameters contentData) {
+		String[] listCF;
+		CFResult cfResult = new CollaborativeFiltering().initCF(cfData);
+		CBResultL cbResult = new CBResultL();;
+		try {
+			
+			cbResult = new ContentBasedL().initCB(cbData);
+		} catch (Exception e) {	}
+		
+		listCF=this.CFCBMix(cfResult, cbResult);
 		return getContentBusiness(contentData, listCF);		
 	}
-
 }

@@ -82,12 +82,11 @@ public class ContentBasedL {
 	public void writerEntries(String user, int secondsToWait) throws IOException{
 		IndexWriter indexWriter = new IndexWriter(indexDir, config);
 		indexWriter.commit();
-		
+		Hashtable<String, Integer> userBusiness=MongoDB.getUserBusiness(user);
 		MongoClient mongoClient = new MongoClient("localhost");
 		DB db = mongoClient.getDB("recommenderBusiness");
 		DBCollection coll = db.getCollection("review");
 		BasicDBObject allQuery = new BasicDBObject().append("stars", new BasicDBObject("$gt",3));
-		allQuery.append("user_id", new BasicDBObject("$ne",user));
 		BasicDBObject fields = new BasicDBObject();
 		int posicionConsulta=1;
 		fields.put("_id", posicionConsulta++);
@@ -107,8 +106,11 @@ public class ContentBasedL {
 					String user_id=dbo.get("user_id").toString();
 					String business_id=dbo.get("business_id").toString();
 					String text=dbo.get("text").toString();
-					Document doc = createDocument(_id, user_id, business_id, text);
-					indexWriter.addDocument(doc);
+					
+					if(!user_id.equals(user) && userBusiness.get(business_id)==null) {
+						Document doc = createDocument(_id, user_id, business_id, text);
+						indexWriter.addDocument(doc);
+					}
 				} catch (NullPointerException e) {}
 				now = new Date();
 			}

@@ -3,6 +3,7 @@ package co.edu.uniandes.hrs.server;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -24,19 +25,17 @@ public class MongoDB {
 		fields.put("stars", 3);
 		DBCursor cursor = coll.find(allQuery, fields);
 		try {
-			int i=0;
 			System.out.println("Usuario\tNegocio\tCalif");
 			while(cursor.hasNext()) {
 			   DBObject singleField=(DBObject) cursor.next();
 			   System.out.print("" + singleField.get("user_id"));
 			   System.out.print("\t" + singleField.get("business_id"));
 			   System.out.println("\t" + singleField.get("stars"));
-			   
-		       i++;
 		   }
 		} finally {
 		   cursor.close();
 		}
+		mongoClient.close();
 	}
 	
 	private void classifyTestData() {
@@ -165,13 +164,49 @@ public class MongoDB {
 		return(ret);
 	}
 	
+	public static Hashtable<String, Integer> getUserBusiness(String user) {
+		Hashtable<String, Integer> ret=new Hashtable<String, Integer>();
+		MongoClient mongoClient = new MongoClient("localhost");
+		DB db = mongoClient.getDB("recommenderBusiness");
+		DBCollection coll = db.getCollection("review");
+		BasicDBObject allQuery = new BasicDBObject().append("user_id", user);
+		BasicDBObject fields = new BasicDBObject();
+		int posicionConsulta=1;
+		fields.put("_id", posicionConsulta++);
+		fields.put("user_id", posicionConsulta++);
+		fields.put("business_id", posicionConsulta++);
+		fields.put("text", posicionConsulta);
+		DBCursor cursor = coll.find(allQuery, fields);
+
+		try {
+			while(cursor.hasNext()) {
+				try {
+					DBObject dbo=cursor.next();
+					String _id=dbo.get("_id").toString();
+					String user_id=dbo.get("user_id").toString();
+					String business_id=dbo.get("business_id").toString();
+					String text=dbo.get("text").toString();
+					if(ret.get(business_id)==null) {
+						ret.put(business_id, 1);
+					}
+					System.out.println(_id + ": \t" + user_id + "\t" + business_id);
+				} catch (NullPointerException e) {}
+			}
+		} finally {
+			cursor.close();
+		}
+		mongoClient.close();
+		return(ret);
+	}
+	
 	public static void main(String[] args) {
 		//new MongoDB().classifyTestData();
 		String[] rrr={"rv7CY8G_XibTx82YhuqQRw", "4GdYyHKukZiMiQu0KJ0Jnw"};
-		ArrayList<String[]> bi=MongoDB.getBusinessInfo(rrr);
+		//ArrayList<String[]> bi=MongoDB.getBusinessInfo(rrr);
+		Hashtable<String, Integer> bi=MongoDB.getUserBusiness("__jP-g2SFRLaoPrIHFL0LA");
 		for(int i=0;i<bi.size();i++) {
-			String[] aaa=bi.get(i);
-			System.out.println(aaa[1]);
+//			String aaa=bi.get(i);
+//			System.out.println(aaa);
 		}
 	}
 

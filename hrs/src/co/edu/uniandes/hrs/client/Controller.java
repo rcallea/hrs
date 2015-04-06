@@ -206,7 +206,13 @@ public class Controller implements ClickHandler, EntryPoint {
 		this.CFView.getListBoxRecommenderType(),
 		userId);
 			
-		
+		CBParametersL cbData=new CBParametersL(this.cblView.getListboxDatasetSize(),
+				this.cblView.getTextboxWaitTime(),
+				this.cblView.getListboxMinTermFrequency(),
+				this.cblView.getListboxMinDocFrequency(),
+				this.cblView.getListBoxMinWordLen(),
+				userId);
+
 		AsyncCallback<List<ContentResult>> callback = new AsyncCallback<List<ContentResult>>() {
 			public void onFailure(Throwable caught) {
 		        // TODO: Do something with errors.
@@ -237,7 +243,7 @@ public class Controller implements ClickHandler, EntryPoint {
 				}
 			}
 		};
-		hrsSvc.getHybridBusiness(cfData,contentData, callback);
+		hrsSvc.getHybridBusiness(cfData, cbData, contentData, callback);
 
 	}
 	

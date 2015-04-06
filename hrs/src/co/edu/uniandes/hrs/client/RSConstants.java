@@ -118,7 +118,7 @@ public interface RSConstants extends Constants{
 	String uiFieldOutOfBoundsMessage();
 	
 	// View Recomendador basado en contenido
-	@DefaultStringValue("Recomendador basado en Contenido")
+	@DefaultStringValue("Recomendador basado en conocimiento")
 	String contTitle();
 
 	@DefaultStringValue("Ingrese una descripci\u00F3n del sitio que busca y lo que espera encontrar en este: ")
