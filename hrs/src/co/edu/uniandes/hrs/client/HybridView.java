@@ -29,7 +29,7 @@ public class HybridView {
 	 * Form elements: Label, textbox, dropdown, button
 	 */
 	private VerticalPanel vp=new VerticalPanel();
-	private HTML htmlUiTitle=new HTML("<div style='width:776px'><h3>" + constants.contTitle() + "</h3></div>");
+	private HTML htmlUiTitle=new HTML("<div style='width:776px'><h3>Recomendador hibrido</h3></div>");
 	private HTML htmlUiSubTitle=new HTML("<br/><h3></h3>");
 	private HTML htmlLabelUsuario=new HTML(constants.cblUser());
 	private HTML htmlLabelCity=new HTML(constants.labelCity());

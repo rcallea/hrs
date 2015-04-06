@@ -140,8 +140,12 @@ public class Controller implements ClickHandler, EntryPoint {
 		String description = this.ContentView.getTextboxDescription().getText();
 		String day = this.ContentView.getListboxDay();
 		String hour = this.ContentView.getListboxHour();
+		double weightName = Double.parseDouble(this.ContentView.getTextboxWeightName().getText());
+		double weightCat = Double.parseDouble(this.ContentView.getTextboxWeightCat().getText());
+		double weightAtt = Double.parseDouble(this.ContentView.getTextboxWeightAttr().getText());
+		double weightCom = Double.parseDouble(this.ContentView.getTextboxWeightComm().getText());
 		
-		data=new ContentParameters(nameCity, category, description, day, hour);
+		data=new ContentParameters(nameCity, category, description, day, hour, weightName, weightCat, weightAtt, weightCom);
 		
 		AsyncCallback<List<ContentResult>> callback = new AsyncCallback<List<ContentResult>>() {
 			public void onFailure(Throwable caught) {
@@ -187,8 +191,12 @@ public class Controller implements ClickHandler, EntryPoint {
 		String description = this.HybridView.getTextboxDescription().getText();
 		String day = this.ContentView.getListboxDay();
 		String hour = this.ContentView.getListboxHour();
+		double weightName = Double.parseDouble(this.ContentView.getTextboxWeightName().getText());
+		double weightCat = Double.parseDouble(this.ContentView.getTextboxWeightCat().getText());
+		double weightAtt = Double.parseDouble(this.ContentView.getTextboxWeightAttr().getText());
+		double weightCom = Double.parseDouble(this.ContentView.getTextboxWeightComm().getText());		
 		
-		contentData=new ContentParameters(nameCity, category, description, day,hour);
+		contentData=new ContentParameters(nameCity, category, description, day,hour, weightName, weightCat, weightAtt, weightCom);
 		
 		CFParameters cfData=new CFParameters();
 		cfData=new CFParameters(this.CFView.getListboxDatasetSize(),

@@ -63,10 +63,10 @@ public class HRSServiceImpl extends RemoteServiceServlet implements HRSService {
 		
 		Map<String,List<String[]>> arrCompare = ConnectionDB.getKeyWordsNegociosComparar(data.getCategory(), data.getCity(), data.getDay(), data.getHour(), listCF);
 				
-		double weightName = 1;
-		double weightCategories = 1;
-		double weightAttributes = 0.8;
-		double weightComments = 0.5;
+		double weightName = data.getWeightName();
+		double weightCategories = data.getWeightCategories();
+		double weightAttributes = data.getWeightAttributes();
+		double weightComments = data.getWeightComments();
 		double similarityTotal = 0;
 	
 		Map<String, Double> arrSimilarity = new HashMap<String, Double>();

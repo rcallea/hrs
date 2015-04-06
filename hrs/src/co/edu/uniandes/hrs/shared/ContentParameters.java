@@ -14,6 +14,10 @@ public class ContentParameters implements Serializable {
 	private String description="";
 	private String day = "";
 	private String hour = "";
+	private double weightName = 0;
+	private double weightCategories = 0;
+	private double weightAttributes = 0;
+	private double weightComments = 0;
 	
 	/**
 	 * @param city
@@ -23,13 +27,17 @@ public class ContentParameters implements Serializable {
 	public ContentParameters()
 	{}
 	
-	public ContentParameters(String city, String category, String description, String day, String hour) {
+	public ContentParameters(String city, String category, String description, String day, String hour, double weightName, double weightCategories, double weightAttributes, double weightComments ) {
 		super();
 		this.city = city;
 		this.category = category;
 		this.description = description;
 		this.day = day;
 		this.hour = hour;
+		this.weightName = weightName;
+		this.weightCategories = weightCategories;
+		this.weightAttributes = weightAttributes;
+		this.weightComments = weightComments;
 	}
 	
 	public String getCity() {
@@ -70,5 +78,36 @@ public class ContentParameters implements Serializable {
 
 	public void setHour(String hour) {
 		this.hour = hour;
+	}
+	public double getWeightName() {
+		return weightName;
+	}
+
+	public void setWeightName(double weightName) {
+		this.weightName = weightName;
+	}
+
+	public double getWeightCategories() {
+		return weightCategories;
+	}
+
+	public void setWeightCategories(double weightCategories) {
+		this.weightCategories = weightCategories;
+	}
+
+	public double getWeightAttributes() {
+		return weightAttributes;
+	}
+
+	public void setWeightAttributes(double weightAttributes) {
+		this.weightAttributes = weightAttributes;
+	}
+
+	public double getWeightComments() {
+		return weightComments;
+	}
+
+	public void setWeightComments(double weightComments) {
+		this.weightComments = weightComments;
 	}
 }
