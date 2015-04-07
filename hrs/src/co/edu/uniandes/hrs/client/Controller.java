@@ -294,9 +294,9 @@ public class Controller implements ClickHandler, EntryPoint {
 			tam=userText.length;
 		}
 		
-		text="Mostrando " + tam + " reviews de " + userText.length + " para verificar<br/>";
+		text="Mostrando " + tam + " reviews de " + userText.length + " para verificar<ul>";
 		for(int i=0;i<tam;i++) {
-			text=text+userText[i]+"<br/>";
+			text=text+"<li>" + userText[i]+"</li>";
 		}
 		
 		tam=50;
@@ -305,11 +305,12 @@ public class Controller implements ClickHandler, EntryPoint {
 			tam=resultText.length;
 		}
 		
-		text=text + "<hr/>Mostrando " + tam + " reviews de " + resultText.length + " recomendados<br/>";
+		text=text + "</ul><hr/>Mostrando " + tam + " reviews de " + resultText.length + " recomendados<ul>";
 		for(int i=0;i<tam;i++) {
-			text=text+resultText[i]+"<br/>";
+			text=text + "<li>" + resultText[i]+"</li>";
 		}
 		
+		text = text + "</ul>";
 		this.cblView.getHtmlResultListResult().setHTML(text);
 	}
 }
