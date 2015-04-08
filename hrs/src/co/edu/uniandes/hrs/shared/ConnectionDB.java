@@ -459,11 +459,6 @@ public class ConnectionDB {
 					i++;
 				}
 				
-				/*for (int k = 0; k < dataFiltered.numAttributes(); k++) {
-					String name = dataFiltered.attribute(k).name();
-					if (name.compareTo("class") != 0)
-						dbl[k] = name;
-				}*/
 		}
 		catch(Exception ex){
 			ex.printStackTrace();
