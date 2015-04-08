@@ -121,49 +121,58 @@ public class MongoDB {
 	}
 	
 	public static ArrayList<String[]> getBusinessInfo(String[] business_id) {
-		String[] getFields={"business_id", "name", "full_address", "categories", "city", "state", "stars", "type", "keyWordsName", "keyWordsCategories"};
+		String[] getFields={"business_id", "name", "full_address", "city", "state", "stars", "type", "latitude", "longitude"};
 		ArrayList<String[]> ret=new ArrayList<String[]>();
+		ArrayList<String[]> retTemp=new ArrayList<String[]>();
 		MongoClient mongoClient = new MongoClient("localhost");
 		DB db = mongoClient.getDB("recommenderBusiness");
 		DBCollection coll = db.getCollection("business");
 		BasicDBObject fields = new BasicDBObject();
+		BasicDBObject allQuery = new BasicDBObject();
+		allQuery.append("business_id", new BasicDBObject("$in", business_id));
 		int fieldPosition=1;
 		for(;fieldPosition<getFields.length + 1; fieldPosition++) {
 			fields.put(getFields[fieldPosition-1], fieldPosition);
 		}
-		for(int i=0;i<business_id.length;i++) {
-			BasicDBObject allQuery = new BasicDBObject();
-			//System.out.println("Buscando: " + business_id[i]);
-			allQuery.append("business_id", business_id[i]);
-			DBCursor cursor = coll.find(allQuery, fields);
-			try {
-				//Recorre los resultados
-				while(cursor.hasNext()) {
-				   DBObject singleField=(DBObject) cursor.next();
-				   String[] retrievedData=new String[getFields.length];
-				   for(fieldPosition=0;fieldPosition<getFields.length;fieldPosition++) {
-					   try {
-						   retrievedData[fieldPosition] = singleField.get(getFields[fieldPosition]).toString();
-					   } catch (NullPointerException e) {
-						   retrievedData[fieldPosition] = "Empty";
-					   }
+		//System.out.println("Buscando: " + business_id[i]);
+		DBCursor cursor = coll.find(allQuery, fields);
+		try {
+			//Recorre los resultados
+			while(cursor.hasNext()) {
+			   DBObject singleField=(DBObject) cursor.next();
+			   String[] retrievedData=new String[getFields.length];
+			   for(fieldPosition=0;fieldPosition<getFields.length;fieldPosition++) {
+				   try {
+					   retrievedData[fieldPosition] = singleField.get(getFields[fieldPosition]).toString();
+				   } catch (NullPointerException e) {
+					   retrievedData[fieldPosition] = "Empty";
 				   }
-				   ret.add(retrievedData);
-				   System.out.print("" + singleField.get(getFields[0]));
-				   System.out.println("\t" + singleField.get(getFields[1]));
 			   }
-			} catch (Exception e) {
-				System.out.println(e);
-				cursor.close();
-			} finally {
-			   cursor.close();
-			}
-			
+			   retTemp.add(retrievedData);
+			   System.out.print("" + singleField.get(getFields[0]));
+			   System.out.println("\t" + singleField.get(getFields[1]));
+		   }
+		} catch (Exception e) {
+			System.out.println(e);
+			cursor.close();
+		} finally {
+		   cursor.close();
 		}
+		
+		for(int i=0;i<business_id.length;i++) {
+			for(int j=0;j<retTemp.size();j++) {
+				String[] retrievedData=retTemp.get(j);
+				if(retrievedData[0].equals(business_id[i])) {
+					j=retTemp.size();
+					ret.add(retrievedData);
+				}
+			}
+		}
+		
 		mongoClient.close();
 		return(ret);
 	}
-	
+
 	public static Hashtable<String, Integer> getUserBusiness(String user) {
 		Hashtable<String, Integer> ret=new Hashtable<String, Integer>();
 		MongoClient mongoClient = new MongoClient("localhost");
@@ -202,11 +211,11 @@ public class MongoDB {
 	public static void main(String[] args) {
 		//new MongoDB().classifyTestData();
 		String[] rrr={"rv7CY8G_XibTx82YhuqQRw", "4GdYyHKukZiMiQu0KJ0Jnw"};
-		//ArrayList<String[]> bi=MongoDB.getBusinessInfo(rrr);
-		Hashtable<String, Integer> bi=MongoDB.getUserBusiness("__jP-g2SFRLaoPrIHFL0LA");
+		ArrayList<String[]> bi=MongoDB.getBusinessInfo(rrr);
+		//Hashtable<String, Integer> bi=MongoDB.getUserBusiness("__jP-g2SFRLaoPrIHFL0LA");
 		for(int i=0;i<bi.size();i++) {
-//			String aaa=bi.get(i);
-//			System.out.println(aaa);
+			String[] aaa=bi.get(i);
+			System.out.println(aaa[0] + "\t" +aaa[1] + "\t" +aaa[2] + "\t" +aaa[3] + "\t" );
 		}
 	}
 

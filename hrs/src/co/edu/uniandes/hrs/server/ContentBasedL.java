@@ -132,8 +132,8 @@ public class ContentBasedL {
 		Document doc = new Document();
 		doc.add(new StringField("id", id, Store.YES));
 		doc.add(new Field("user_id", user, type));
-		doc.add(new Field("business_id", user, type));
-		doc.add(new Field("content", content, type));
+		doc.add(new Field("business_id", business, type));
+		doc.add(new Field("text", content, type));
 		return doc;
 	}
 
@@ -188,7 +188,7 @@ public class ContentBasedL {
 	    mlt.setMinTermFreq(searchForSimilar.getMinTermFrequency());
 	    mlt.setMinDocFreq(searchForSimilar.getMinDocFrequency());
 	    mlt.setMinWordLen(searchForSimilar.getMinWordLen());
-	    mlt.setFieldNames(new String[]{"business_id", "content"});
+	    mlt.setFieldNames(new String[]{"_id", "user_id", "business_id", "text"});
 	    mlt.setAnalyzer(analyzer);
 	    
 	    double docsSelected=1;
@@ -203,16 +203,16 @@ public class ContentBasedL {
 	    int posicion=0;
 	    while((double)posicion<docsSelected) {
 	    	Document doc=userDocs.get(posicion);
-		    Query query = mlt.like("content",new StringReader(doc.get("content")));
+		    Query query = mlt.like("text",new StringReader(doc.get("text")));
 		    TopDocs topDocs = indexSearcher.search(query,20);
-		    queryText.add(doc.get("business_id") + ": " + doc.get("content"));
+		    queryText.add(doc.get("business_id") + ": " + doc.get("text"));
 		    for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
 		        Document aSimilar = indexSearcher.doc( scoreDoc.doc );
 		        if(businessReferenced.get(aSimilar.get("business_id"))==null) {
 		        	businessReferenced.put(aSimilar.get("business_id"),1);
 		        }
 		        result.add(aSimilar);
-		        resultText.add(aSimilar.get("business_id") + ": " + aSimilar.get("content"));
+		        resultText.add(aSimilar.get("business_id") + ": " + aSimilar.get("text"));
 		    }
 	    	posicion++;
 	    }

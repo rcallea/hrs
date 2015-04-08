@@ -301,13 +301,14 @@ public class Controller implements ClickHandler, EntryPoint {
 		
 		tam=50;
 		String[] resultText=result.getOtherDocs();
+		String[] resultText1=result.getDataInfo();
 		if(tam>resultText.length) {
 			tam=resultText.length;
 		}
 		
 		text=text + "</ul><hr/>Mostrando " + tam + " reviews de " + resultText.length + " recomendados<ul>";
 		for(int i=0;i<tam;i++) {
-			text=text + "<li>" + resultText[i]+"</li>";
+			text=text + "<li><strong>" + resultText1[i] + "</strong>: " + resultText[i]+"</li>";
 		}
 		
 		text = text + "</ul>";
