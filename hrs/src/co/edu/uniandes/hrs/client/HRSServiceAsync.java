@@ -26,5 +26,5 @@ public interface HRSServiceAsync {
 
 	void initCF(CFParameters data, AsyncCallback<CFResult> callback);
 	void initCBL(CBParametersL data, AsyncCallback<CBResultL> callback);
-
+	void initCBL2(CBParametersL data, AsyncCallback<CBResultL> callback);
 }

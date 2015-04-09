@@ -52,6 +52,14 @@ public class HRSServiceImpl extends RemoteServiceServlet implements HRSService {
 		return(new CBResultL());
 	}
 
+	@Override
+	public CBResultL initCBL2(CBParametersL data) {
+		try {
+			return(new ContentBasedL2().initCB(data));
+		} catch (IOException e) {}
+		return(new CBResultL());
+	}
+
 	public List<ContentResult> getContentBusiness(ContentParameters data, String[] listCF)
 	{
 		List<ContentResult> arrResult = new ArrayList<ContentResult>();

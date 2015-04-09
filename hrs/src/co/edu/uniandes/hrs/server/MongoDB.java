@@ -149,8 +149,8 @@ public class MongoDB {
 				   }
 			   }
 			   retTemp.add(retrievedData);
-			   System.out.print("" + singleField.get(getFields[0]));
-			   System.out.println("\t" + singleField.get(getFields[1]));
+			   //System.out.print("" + singleField.get(getFields[0]));
+			   //System.out.println("\t" + singleField.get(getFields[1]));
 		   }
 		} catch (Exception e) {
 			System.out.println(e);
@@ -175,6 +175,7 @@ public class MongoDB {
 
 	public static Hashtable<String, Integer> getUserBusiness(String user) {
 		Hashtable<String, Integer> ret=new Hashtable<String, Integer>();
+		System.setProperty("DEBUG.MONGO", "false");
 		MongoClient mongoClient = new MongoClient("localhost");
 		DB db = mongoClient.getDB("recommenderBusiness");
 		DBCollection coll = db.getCollection("review");
@@ -198,7 +199,7 @@ public class MongoDB {
 					if(ret.get(business_id)==null) {
 						ret.put(business_id, 1);
 					}
-					System.out.println(_id + ": \t" + user_id + "\t" + business_id);
+					//System.out.println(_id + ": \t" + user_id + "\t" + business_id);
 				} catch (NullPointerException e) {}
 			}
 		} finally {

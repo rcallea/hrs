@@ -42,6 +42,9 @@ public interface RSConstants extends Constants{
 	@DefaultStringValue("Calcular CBL")
 	String cblSend();
 
+	@DefaultStringValue("Calcular CBL2")
+	String cblSend2();
+
 	@DefaultStringArrayValue({"0;Cualquiera","1;1","2;2","3;3","4;4","5;5","6;6","7;7","8;8","9;9","10;10","15;15","20;20","25;25","30;30","35;35","40;40","45;45","50;50","55;55","60;60","65;65","70;70","75;75","80;80","85;85","90;90","95;95","100;100"})
 	String[] cblMinTermFrequencyValues();
 

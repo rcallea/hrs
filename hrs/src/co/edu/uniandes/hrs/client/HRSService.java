@@ -28,5 +28,5 @@ public interface HRSService extends RemoteService{
 
 	CFResult initCF(CFParameters data);
 	CBResultL initCBL(CBParametersL data);
-
+	CBResultL initCBL2(CBParametersL data);
 }
