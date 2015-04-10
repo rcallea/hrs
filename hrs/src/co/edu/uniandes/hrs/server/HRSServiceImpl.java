@@ -132,44 +132,50 @@ public class HRSServiceImpl extends RemoteServiceServlet implements HRSService {
 		return ConnectionDB.getInformationBusiness(businessId);
 	}
 	
-	public String[] CFCBMix(CFResult cfResult, CBResultL cbResult) {
+	public String[] CFCBMix(CFResult cfResult, CBResultL cbResult, CBResultL cbResult2) {
 		String[] ret={};
 		String[] cb=cbResult.getData();
+		String[] cb2=cbResult2.getData();
 		String[] cf=cfResult.getData();
-		if(cb.length==0) {
-			ret=cf;
-		} else if(cf.length==0) {
-			ret=cb;
-		} else {
-			ArrayList<String> al=new ArrayList<String>();
-			int i=0;
-			while(i<cf.length || i<cb.length) {
-				if(i<cb.length) {
-					al.add(cb[i]);
-				}
-				if(i<cf.length) {
-					al.add(cf[i]);
-				}
-				i++;
+		ArrayList<String> al=new ArrayList<String>();
+
+		int length=cf.length;
+		if(length<cb.length) {
+			length=cb.length;
+		}
+		if(length<cb2.length) {
+			length=cb2.length;
+		}
+		
+		for(int i=0;i<length;i++) {
+			if(i<cb.length) {
+				al.add(cb[i]);
 			}
-			ret=new String[al.size()];
-			for(i=0;i<al.size();i++) {
-				ret[i]=al.get(i);
+			if(i<cb2.length) {
+				al.add(cb2[i]);
 			}
+			if(i<cf.length) {
+				al.add(cf[i]);
+			}
+		}
+		ret=new String[al.size()];
+		for(int i=0;i<al.size();i++) {
+			ret[i]=al.get(i);
 		}
 		return ret;
 	}
 
-	public List<ContentResult> getHybridBusiness(CFParameters cfData, CBParametersL cbData, ContentParameters contentData) {
+	public List<ContentResult> getHybridBusiness(CFParameters cfData, CBParametersL cbData, CBParametersL cbData2, ContentParameters contentData) {
 		String[] listCF;
 		CFResult cfResult = new CollaborativeFiltering().initCF(cfData);
-		CBResultL cbResult = new CBResultL();;
+		CBResultL cbResult = new CBResultL();
+		CBResultL cbResult2 = new CBResultL();
 		try {
-			
 			cbResult = new ContentBasedL().initCB(cbData);
+			cbResult2 = new ContentBasedL2().initCB(cbData2);
 		} catch (Exception e) {	}
 		
-		listCF=this.CFCBMix(cfResult, cbResult);
+		listCF=this.CFCBMix(cfResult, cbResult, cbResult2);
 		return getContentBusiness(contentData, listCF);		
 	}
 }

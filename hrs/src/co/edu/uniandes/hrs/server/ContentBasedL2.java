@@ -13,7 +13,6 @@ package co.edu.uniandes.hrs.server;
  * 
  */
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -47,7 +46,6 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-import com.mongodb.BasicDBList;
 
 import co.edu.uniandes.hrs.shared.CBParametersL;
 import co.edu.uniandes.hrs.shared.CBResultL;
@@ -58,7 +56,7 @@ public class ContentBasedL2 {
 	private StandardAnalyzer analyzer;
 	private IndexWriterConfig config;
 	private CBResultL cblr=new CBResultL();
-	private ArrayList<Document> userDocs;
+	//private ArrayList<Document> userDocs;
 	private static final String[] FIELDS={"_id", "business_id", "open", "hours", "categories", "city", "state", "attributes", "type", "keyWordsName", "keyWordsCategories", "keyWordsComments", "keyWordsAttributes"};
 
 	public CBResultL initCB(CBParametersL data) throws IOException {
@@ -230,12 +228,12 @@ public class ContentBasedL2 {
 		    Query query = mlt.like("values",new StringReader(doc.get("values")));
 		    TopDocs topDocs = indexSearcher.search(query,20);
 		    queryText.add(doc.get("business_id") + ": " + doc.get("values"));
-
 		    for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
 		        Document aSimilar = indexSearcher.doc( scoreDoc.doc );
 		        if(businessReferenced.get(aSimilar.get("business_id"))==null) {
 		        	businessReferenced.put(aSimilar.get("business_id"),1);
 		        }
+		        
 		        result.add(aSimilar);
 		        resultText.add(aSimilar.get("business_id") + ": " + aSimilar.get("values"));
 		        System.out.println("Similar: " + aSimilar.get("business_id") + ": " + aSimilar.get("values"));
@@ -325,7 +323,7 @@ public class ContentBasedL2 {
 						posClose+=24;
 					}
 					String add="";
-					for(int j=posOpen;j<posClose;j++) {
+					for(int j=posOpen;j<posClose;j+=posClose) {
 						add = add + " " + days[i] + hours[j];
 					}
 					ret = ret + " " + add + " " + days[i] + "Close" + close;

@@ -222,6 +222,13 @@ public class Controller implements ClickHandler, EntryPoint {
 				this.cblView.getListBoxMinWordLen(),
 				userId);
 
+		CBParametersL cbData2=new CBParametersL(this.cblView2.getListboxDatasetSize(),
+				this.cblView2.getTextboxWaitTime(),
+				this.cblView2.getListboxMinTermFrequency(),
+				this.cblView2.getListboxMinDocFrequency(),
+				this.cblView2.getListBoxMinWordLen(),
+				userId);
+
 		AsyncCallback<List<ContentResult>> callback = new AsyncCallback<List<ContentResult>>() {
 			public void onFailure(Throwable caught) {
 		        // TODO: Do something with errors.
@@ -252,7 +259,7 @@ public class Controller implements ClickHandler, EntryPoint {
 				}
 			}
 		};
-		hrsSvc.getHybridBusiness(cfData, cbData, contentData, callback);
+		hrsSvc.getHybridBusiness(cfData, cbData, cbData2, contentData, callback);
 
 	}
 	
