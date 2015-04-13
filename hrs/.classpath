@@ -9,10 +9,10 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/recommender101.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/mongo-java-driver-3.0.0-rc1.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/snowball-20051019.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/weka-3.7.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/lucene-analyzers-common-4.10.4.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/lucene-core-4.10.4.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/lucene-queries-4.10.4.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/snowball-20051019.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

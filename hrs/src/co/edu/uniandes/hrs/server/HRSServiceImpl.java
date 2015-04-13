@@ -62,6 +62,7 @@ public class HRSServiceImpl extends RemoteServiceServlet implements HRSService {
 
 	public List<ContentResult> getContentBusiness(ContentParameters data, String[] listCF)
 	{
+		System.out.println("Iniciando recomendador conocimiento");
 		List<ContentResult> arrResult = new ArrayList<ContentResult>();
 		HashMap<String,ContentResult> arrResultAux = new HashMap<String, ContentResult>();
 		
@@ -70,7 +71,8 @@ public class HRSServiceImpl extends RemoteServiceServlet implements HRSService {
 		String[] arrReq = ConnectionDB.ProcesarRequerimiento(data.getDescription());
 		
 		Map<String,List<String[]>> arrCompare = ConnectionDB.getKeyWordsNegociosComparar(data.getCategory(), data.getCity(), data.getDay(), data.getHour(), listCF);
-				
+		
+		System.out.println("Lista seleccionada "+ arrCompare.size());
 		double weightName = data.getWeightName();
 		double weightCategories = data.getWeightCategories();
 		double weightAttributes = data.getWeightAttributes();

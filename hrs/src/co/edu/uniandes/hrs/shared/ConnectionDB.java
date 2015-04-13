@@ -448,6 +448,7 @@ public class ConnectionDB {
 				filter.setLowerCaseTokens(true);
 				filter.setUseStoplist(true);
 				filter.setStemmer(snowballStemmer);
+				System.out.println("snowball: "+snowballStemmer);
 	
 				Instances dataFiltered = Filter.useFilter(dataRaw, filter);
 	
