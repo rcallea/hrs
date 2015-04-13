@@ -30,7 +30,7 @@ public class CollaborativeFiltering {
 			} else if(data.getDatasetSize().startsWith("7")) {
 				datasetSize="70";
 			}
-			loader.setFilename("/usr/local/tomcat7/webapps/hrs/data/g" + datasetSize + "t.txt");
+			loader.setFilename("./data/g" + datasetSize + "t.txt");
 			System.out.println("Cargando datamodel");
 			loader.loadData(dm);
 			NearestNeighbors rec = new NearestNeighbors();
@@ -95,7 +95,7 @@ public class CollaborativeFiltering {
 			} else if(data.getDatasetSize().startsWith("7")) {
 				datasetSize="70";
 			}
-			loader.setFilename("/usr/local/tomcat7/webapps/hrs/data/g" + datasetSize + "v.txt");
+			loader.setFilename("./data/g" + datasetSize + "v.txt");
 			System.out.println("Cargando datamodel");
 			loader.loadVerifyData(dm, data.getUser());
 

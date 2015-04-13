@@ -236,7 +236,7 @@ public class ContentBasedL2 {
 		        
 		        result.add(aSimilar);
 		        resultText.add(aSimilar.get("business_id") + ": " + aSimilar.get("values"));
-		        System.out.println("Similar: " + aSimilar.get("business_id") + ": " + aSimilar.get("values"));
+		        //System.out.println("Similar: " + aSimilar.get("business_id") + ": " + aSimilar.get("values"));
 		    }
 	    	posicion++;
 	    }
