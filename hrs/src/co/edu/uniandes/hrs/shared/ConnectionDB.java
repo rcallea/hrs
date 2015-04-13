@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
  
 
+
 import javax.swing.text.html.ListView;
 
 import weka.core.Instances;
@@ -31,6 +32,9 @@ import com.mongodb.WriteResult;
 public class ConnectionDB {
 
 	static SnowballStemmer snowballStemmer =  new SnowballStemmer();
+	private static final String PATH_FILE = "/home/userstudent/";
+	//private static final String PATH_FILE = "c:/";
+	
 	
 	public static void main(String[] args) {
 		
@@ -430,12 +434,12 @@ public class ConnectionDB {
 	{
 		String[] dbl = new String[1];
 		try{
-				PrintWriter pr= new PrintWriter(new File("c://procesoRequerimiento//Archivos//requerimiento.txt"));
+				PrintWriter pr= new PrintWriter(new File(PATH_FILE + "procesoRequerimiento/Archivos/requerimiento.txt"));
 				pr.println(requerimiento);
 				pr.close();
 				
 				TextDirectoryLoader loader = new TextDirectoryLoader();
-				loader.setDirectory(new File("c://procesoRequerimiento"));
+				loader.setDirectory(new File(PATH_FILE + "procesoRequerimiento"));
 				Instances dataRaw = loader.getDataSet();
 	
 				StringToWordVector filter = new StringToWordVector();
@@ -443,7 +447,7 @@ public class ConnectionDB {
 				filter.setInputFormat(dataRaw);
 				filter.setLowerCaseTokens(true);
 				filter.setUseStoplist(true);
-				filter.setStemmer(new weka.core.stemmers.SnowballStemmer());
+				filter.setStemmer(snowballStemmer);
 	
 				Instances dataFiltered = Filter.useFilter(dataRaw, filter);
 	
@@ -453,9 +457,10 @@ public class ConnectionDB {
 				while(i < dataFiltered.numAttributes())
 				{
 					String name = dataFiltered.attribute(i).name();
-					if (name.compareTo("class") != 0)
+					if (name.compareTo("class") != 0){
 						dbl[i - 1] = name;
-					
+						System.out.println("name: " + name);
+					}
 					i++;
 				}
 				
@@ -472,12 +477,12 @@ public class ConnectionDB {
 		BasicDBList dbl = new BasicDBList();
 		try {
 			
-			PrintWriter pr= new PrintWriter(new File("c://procesoCategorias//Archivos//categorias.txt"));
+			PrintWriter pr= new PrintWriter(new File(PATH_FILE + "procesoCategorias/Archivos/categorias.txt"));
 			pr.println(categories);
 			pr.close();
 						 
 			 TextDirectoryLoader loader = new TextDirectoryLoader();
-			 loader.setDirectory(new File("c://procesoCategorias"));
+			 loader.setDirectory(new File(PATH_FILE + "procesoCategorias"));
 			 Instances dataRaw = loader.getDataSet();
 			 
 			 StringToWordVector filter = new StringToWordVector();
@@ -543,6 +548,8 @@ public class ConnectionDB {
 	  	  	fields.put("keyWordsComments", 1);
 	  	  	fields.put("keyWordsName", 1);
 			
+	  	  	
+	  	    System.out.println("Iniciando consulta conocimiento");
 	  	  	DBCursor cursor2 = collection.find(allQuery, fields);
 	  	  	while(cursor2.hasNext()){
 	  	  		DBObject cursor = cursor2.next();
