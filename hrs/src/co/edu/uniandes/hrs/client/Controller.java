@@ -194,6 +194,7 @@ public class Controller implements ClickHandler, EntryPoint {
 	private void LoadRecommendationHybrid() {
 		ContentParameters contentData=new ContentParameters();
 		
+		HybridView.getHtmlUiSubTitle().setHTML("<br/><h3>Calculando</h3>");
 		String userId = this.HybridView.getTextboxUser().getText();
 		String nameCity = this.HybridView.getListboxCity(); 
 		String category = this.HybridView.getTextboxCategory().getText();  
