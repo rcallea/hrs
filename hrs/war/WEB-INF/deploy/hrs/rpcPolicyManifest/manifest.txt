@@ -1,2 +1,3 @@
 # Module hrs
 # RPC service class, partial path of RPC policy file
+co.edu.uniandes.hrs.client.HRSService, A821A6FCF5399EDC63BFBC37AB352765.gwt.rpc

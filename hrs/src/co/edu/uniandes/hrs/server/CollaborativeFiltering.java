@@ -14,6 +14,8 @@ import co.edu.uniandes.hrs.shared.CFResult;
 public class CollaborativeFiltering {
 	private float precision=0;
 	private float recall=0;
+	//private final static String PATH=".";
+	private final static String PATH="/usr/local/tomcat7/webapps/hrs";
 
 	public CFResult initCF(CFParameters data) {
 		CFResult ret=new CFResult();
@@ -30,7 +32,7 @@ public class CollaborativeFiltering {
 			} else if(data.getDatasetSize().startsWith("7")) {
 				datasetSize="70";
 			}
-			loader.setFilename("./data/g" + datasetSize + "t.txt");
+			loader.setFilename(CollaborativeFiltering.PATH + "/data/g" + datasetSize + "t.txt");
 			System.out.println("Cargando datamodel");
 			loader.loadData(dm);
 			NearestNeighbors rec = new NearestNeighbors();
@@ -96,7 +98,7 @@ public class CollaborativeFiltering {
 			} else if(data.getDatasetSize().startsWith("7")) {
 				datasetSize="70";
 			}
-			loader.setFilename("./data/g" + datasetSize + "v.txt");
+			loader.setFilename(CollaborativeFiltering.PATH + "/data/g" + datasetSize + "v.txt");
 			System.out.println("Cargando datamodel");
 			loader.loadVerifyData(dm, data.getUser());
 
@@ -107,7 +109,7 @@ public class CollaborativeFiltering {
 			int found=0;
 			for(Rating r:ratings) {
 				tamRatings++;
-				int currentBusiness=r.user;
+				int currentBusiness=r.item;
 				for(int i=0;i<recommendations.size();i++) {
 					int currentRecommendation=recommendations.get(i);
 					if(currentRecommendation==currentBusiness) {
@@ -141,7 +143,7 @@ public class CollaborativeFiltering {
 			} else if(data.getDatasetSize().startsWith("7")) {
 				datasetSize="70";
 			}
-			loader.setFilename("./data/g" + datasetSize + "t.txt");
+			loader.setFilename(CollaborativeFiltering.PATH + "/data/g" + datasetSize + "t.txt");
 			System.out.println("Cargando datamodel");
 			loader.loadData(dm);
 			NearestNeighbors rec = new NearestNeighbors();
