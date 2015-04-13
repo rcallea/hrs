@@ -30,7 +30,7 @@ public class CollaborativeFiltering {
 			} else if(data.getDatasetSize().startsWith("7")) {
 				datasetSize="70";
 			}
-			loader.setFilename("/usr/local/tomcat7/webapps/hrs/data/g" + datasetSize + "t.txt");
+			loader.setFilename("./data/g" + datasetSize + "t.txt");
 			System.out.println("Cargando datamodel");
 			loader.loadData(dm);
 			NearestNeighbors rec = new NearestNeighbors();
@@ -49,6 +49,7 @@ public class CollaborativeFiltering {
 			System.out.println("Adicionando resultados a la lista CF");
 			for(int i=0;i<recommendations.size();i++) {
 				retList[i]="" + loader.getBusiness().get(recommendations.get(i));
+				System.out.println(retList[i]);
 			}
 			int maxDataSize=50;
 			String[] retListSearch;
@@ -95,7 +96,7 @@ public class CollaborativeFiltering {
 			} else if(data.getDatasetSize().startsWith("7")) {
 				datasetSize="70";
 			}
-			loader.setFilename("/usr/local/tomcat7/webapps/hrs/data/g" + datasetSize + "v.txt");
+			loader.setFilename("./data/g" + datasetSize + "v.txt");
 			System.out.println("Cargando datamodel");
 			loader.loadVerifyData(dm, data.getUser());
 
@@ -115,7 +116,7 @@ public class CollaborativeFiltering {
 					}
 				}
 			}
-
+			
 			this.precision = ((float)found)/((float)(found + recommendations.size()));
 			this.recall = ((float)found)/((float)(found + tamRatings));
 		}
