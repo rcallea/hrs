@@ -49,6 +49,7 @@ public class CollaborativeFiltering {
 			System.out.println("Adicionando resultados a la lista CF");
 			for(int i=0;i<recommendations.size();i++) {
 				retList[i]="" + loader.getBusiness().get(recommendations.get(i));
+				System.out.println(retList[i]);
 			}
 			int maxDataSize=50;
 			String[] retListSearch;
@@ -115,7 +116,7 @@ public class CollaborativeFiltering {
 					}
 				}
 			}
-
+			
 			this.precision = ((float)found)/((float)(found + recommendations.size()));
 			this.recall = ((float)found)/((float)(found + tamRatings));
 		}
